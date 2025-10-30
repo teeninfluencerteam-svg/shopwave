@@ -7,14 +7,42 @@ export default function MyOrders() {
   const [loading, setLoading] = useState(true)
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
+  const [vendorId, setVendorId] = useState(null)
 
   useEffect(() => {
-    fetchOrders()
+    const loadVendorData = async () => {
+      const vendorEmail = localStorage.getItem('vendorEmail')
+      
+      if (vendorEmail) {
+        try {
+          const response = await fetch(`/api/vendor/profile?email=${vendorEmail}`)
+          const result = await response.json()
+          
+          if (result.success && result.vendor) {
+            setVendorId(result.vendor._id)
+            return
+          }
+        } catch (error) {
+          console.error('Error fetching vendor profile:', error)
+        }
+      }
+      
+      window.location.href = '/vendor/login'
+    }
+    
+    loadVendorData()
   }, [])
 
+  useEffect(() => {
+    if (vendorId) {
+      fetchOrders()
+    }
+  }, [vendorId])
+
   const fetchOrders = async () => {
+    if (!vendorId) return
+    
     try {
-      const vendorId = localStorage.getItem('vendorId')
       const response = await fetch(`/api/vendor/orders?vendorId=${vendorId}`)
       const data = await response.json()
       
@@ -210,19 +238,7 @@ Status: ${order.status}
           <div className="mb-6 bg-gray-50 p-4 rounded-lg">
             <h3 className="text-lg font-semibold mb-3">Order Summary</h3>
             <div className="space-y-2">
-              <div className="flex justify-between">
-                <span>Subtotal:</span>
-                <span>₹{(selectedOrder.subtotal || selectedOrder.total || 0).toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Shipping:</span>
-                <span>₹{(selectedOrder.shipping || 0).toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Tax:</span>
-                <span>₹{(selectedOrder.tax || 0).toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between font-bold text-lg border-t pt-2">
+              <div className="flex justify-between font-bold text-lg">
                 <span>Total:</span>
                 <span>₹{(selectedOrder.total || 0).toLocaleString()}</span>
               </div>

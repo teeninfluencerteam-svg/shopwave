@@ -18,8 +18,26 @@ export async function GET(request: NextRequest) {
     }
 
     console.log('Fetching products for vendorId:', vendorId)
-    const products = await VendorProduct.find({ vendorId }).sort({ createdAt: -1 })
-    console.log('Found products:', products.length)
+    
+    // First try with the provided vendorId
+    let products = await VendorProduct.find({ vendorId }).sort({ createdAt: -1 })
+    console.log('Found products with vendorId:', products.length)
+    
+    // If no products found, try to find vendor by _id and get products by email
+    if (products.length === 0) {
+      const mongoose = require('mongoose')
+      const Vendor = require('@/models/Vendor').default
+      
+      try {
+        const vendor = await Vendor.findById(vendorId).lean()
+        if (vendor && vendor.email) {
+          products = await VendorProduct.find({ vendorId: vendor.email }).sort({ createdAt: -1 })
+          console.log('Found products with email vendorId:', products.length)
+        }
+      } catch (e) {
+        console.log('Error trying email-based vendorId:', e.message)
+      }
+    }
 
     return NextResponse.json({ 
       success: true, 

@@ -18,13 +18,29 @@ export default function VendorDashboard() {
       const vendorId = localStorage.getItem('vendorId')
       const vendorEmail = localStorage.getItem('vendorEmail')
       
-      if (vendorId) {
-        setVendorInfo({ id: vendorId, email: vendorEmail })
-        fetchVendorData(vendorId)
-        return
+      if (vendorId && vendorEmail) {
+        // Fetch vendor profile to get the correct MongoDB _id
+        try {
+          const response = await fetch(`/api/vendor/profile?email=${vendorEmail}`)
+          const result = await response.json()
+          
+          if (result.success && result.vendor) {
+            const mongoId = result.vendor._id
+            console.log('🔍 Using vendor MongoDB _id for stats:', mongoId)
+            setVendorInfo({ 
+              id: mongoId, 
+              email: vendorEmail,
+              businessName: result.vendor.businessName 
+            })
+            fetchVendorData(mongoId)
+            return
+          }
+        } catch (error) {
+          console.error('Error fetching vendor profile:', error)
+        }
       }
       
-      // If no localStorage, redirect to login
+      // If no localStorage or error, redirect to login
       window.location.href = '/vendor/login'
     }
     
@@ -32,60 +48,45 @@ export default function VendorDashboard() {
   }, [])
 
   const fetchVendorData = async (vendorId) => {
-    const now = Date.now()
-    const cacheKey = `vendor_data_${vendorId}`
-    const cacheExpiry = 5 * 60 * 1000 // 5 minutes
-    
-    // Check cache first
-    const cached = localStorage.getItem(cacheKey)
-    if (cached && (now - lastFetch) < cacheExpiry) {
-      const cachedData = JSON.parse(cached)
-      setStats(cachedData.stats)
-      setNotifications(cachedData.notifications || [])
-      setRecentOrders(cachedData.recentOrders || [])
-      setLoading(false)
-      return
-    }
-
     try {
-      // Fetch only essential stats first for faster loading
-      const statsRes = await fetch(`/api/vendor/stats?vendorId=${vendorId}`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        signal: AbortSignal.timeout(8000)
-      })
+      // Get product count from same API as My Products page
+      const productsRes = await fetch(`/api/vendor/products?vendorId=${vendorId}`)
+      const productsData = await productsRes.json()
+      const productCount = productsData.success ? productsData.products.length : 0
+      
+      // Fetch other stats - use the MongoDB _id from vendor profile
+      const statsRes = await fetch(`/api/vendor/stats?vendorId=${vendorId}`)
+      let statsData = { stats: { totalOrders: 0, totalEarnings: 0, pendingOrders: 0 } }
       
       if (statsRes.ok) {
-        const statsData = await statsRes.json()
-        const statsResult = statsData.stats || { totalProducts: 0, totalOrders: 0, totalEarnings: 0, pendingOrders: 0 }
-        setStats(statsResult)
-        
-        // Cache the stats immediately
-        localStorage.setItem(cacheKey, JSON.stringify({ 
-          stats: statsResult, 
-          notifications: [], 
-          recentOrders: [],
-          timestamp: now 
-        }))
-        setLastFetch(now)
+        statsData = await statsRes.json()
+        console.log('📊 Stats response:', statsData)
       } else {
-        setStats({ totalProducts: 0, totalOrders: 0, totalEarnings: 0, pendingOrders: 0 })
+        console.error('❌ Stats API failed:', statsRes.status)
       }
       
-      // Load secondary data in background (non-blocking)
-      setTimeout(() => {
-        Promise.allSettled([
-          fetch(`/api/vendor/notifications?vendorId=${vendorId}&limit=5`).then(res => res.ok ? res.json() : null),
-          fetch(`/api/vendor/orders?vendorId=${vendorId}&limit=5`).then(res => res.ok ? res.json() : null)
-        ]).then(([notifResult, orderResult]) => {
-          if (notifResult.status === 'fulfilled' && notifResult.value) {
-            setNotifications(notifResult.value.notifications || [])
-          }
-          if (orderResult.status === 'fulfilled' && orderResult.value) {
-            setRecentOrders(orderResult.value.orders || [])
-          }
-        })
-      }, 100)
+      // Combine with actual product count
+      const finalStats = {
+        totalProducts: productCount,
+        totalOrders: statsData.stats?.totalOrders || 0,
+        totalEarnings: statsData.stats?.totalEarnings || 0,
+        pendingOrders: statsData.stats?.pendingOrders || 0
+      }
+      
+      setStats(finalStats)
+      
+      // Load secondary data
+      Promise.allSettled([
+        fetch(`/api/vendor/notifications?vendorId=${vendorId}&limit=5`).then(res => res.ok ? res.json() : null),
+        fetch(`/api/vendor/orders?vendorId=${vendorId}&limit=5`).then(res => res.ok ? res.json() : null)
+      ]).then(([notifResult, orderResult]) => {
+        if (notifResult.status === 'fulfilled' && notifResult.value) {
+          setNotifications(notifResult.value.notifications || [])
+        }
+        if (orderResult.status === 'fulfilled' && orderResult.value) {
+          setRecentOrders(orderResult.value.orders || [])
+        }
+      })
       
     } catch (error) {
       console.error('Error fetching vendor data:', error)
@@ -130,7 +131,7 @@ export default function VendorDashboard() {
             <h1 className="text-2xl font-bold">🏪 Vendor Dashboard</h1>
             <div className="flex items-center gap-4">
               <span className="text-sm text-gray-600">
-                Welcome, {vendorInfo?.email}
+                Welcome, {vendorInfo?.businessName || vendorInfo?.email}
               </span>
               <button onClick={logout} className="border px-3 py-1 rounded text-sm hover:bg-gray-50">
                 Logout

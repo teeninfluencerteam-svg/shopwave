@@ -1,13 +1,14 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { BarChart3, Package, Users, ShoppingCart, ArrowLeft, Home } from 'lucide-react'
+import { BarChart3, Package, Users, ShoppingCart, ArrowLeft, Home, Grid3X3 } from 'lucide-react'
 
 const menuItems = [
   { icon: BarChart3, label: 'Dashboard', href: '/admin', emoji: '📊' },
   { icon: ShoppingCart, label: 'Orders', href: '/admin/orders', emoji: '📦' },
   { icon: Users, label: 'Customers', href: '/admin/customers', emoji: '👥' },
   { icon: Package, label: 'Products', href: '/admin/products', emoji: '🛍️' },
+  { icon: Grid3X3, label: 'Categories', href: '/admin/categories', emoji: '📂' },
   { icon: Users, label: 'Vendors', href: '/admin/vendors', emoji: '🏪' },
   { icon: BarChart3, label: 'Analytics', href: '/admin/analytics', emoji: '📈' },
 ]

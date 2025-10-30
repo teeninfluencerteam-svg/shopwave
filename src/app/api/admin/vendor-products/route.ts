@@ -4,6 +4,7 @@ import VendorProduct from '@/models/VendorProduct'
 
 export async function GET(request: NextRequest) {
   try {
+    console.log('GET /api/admin/vendor-products called')
     await dbConnect()
     
     const { searchParams } = new URL(request.url)
@@ -29,17 +30,22 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
+    console.log('PUT /api/admin/vendor-products called')
     await dbConnect()
     
-    const { productId, status } = await request.json()
+    const body = await request.json()
+    console.log('Request body:', body)
+    const { productId, status } = body
 
     if (!productId || !status) {
+      console.log('Missing productId or status')
       return NextResponse.json({ 
         success: false, 
         message: 'Product ID and status required' 
       }, { status: 400 })
     }
 
+    console.log(`Updating product ${productId} to status ${status}`)
     const product = await VendorProduct.findByIdAndUpdate(
       productId,
       { status, updatedAt: new Date() },
@@ -47,12 +53,14 @@ export async function PUT(request: NextRequest) {
     )
 
     if (!product) {
+      console.log('Product not found')
       return NextResponse.json({ 
         success: false, 
         message: 'Product not found' 
       }, { status: 404 })
     }
 
+    console.log('Product updated successfully')
     return NextResponse.json({ 
       success: true, 
       message: `Product ${status} successfully` 

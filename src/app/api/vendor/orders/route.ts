@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import dbConnect from '@/lib/dbConnect'
 import VendorOrder from '@/models/VendorOrder'
+import AdminUser from '@/models/AdminUser'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 15
@@ -20,27 +21,116 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    // Get orders with optimized query
-    const orders = await VendorOrder.find({ vendorId })
+    console.log('Fetching orders for vendorId:', vendorId)
+    
+    // Get vendor details to find the correct vendorId used in orders
+    const mongoose = require('mongoose')
+    const Vendor = require('@/models/Vendor').default
+    
+    let actualVendorId = vendorId
+    let vendor = null
+    
+    try {
+      vendor = await Vendor.findById(vendorId).lean()
+      if (vendor && vendor.vendorId) {
+        actualVendorId = vendor.vendorId
+      }
+      console.log('🔍 Vendor found:', { _id: vendorId, vendorId: vendor?.vendorId, email: vendor?.email })
+    } catch (e) {
+      console.log('Error fetching vendor details:', e.message)
+    }
+    
+    // First try with the actual vendorId
+    let orders = await VendorOrder.find({ vendorId: actualVendorId })
       .sort({ createdAt: -1 })
       .limit(Math.min(limit, 50))
       .maxTimeMS(5000)
       .lean()
+      
+    console.log('Found orders with actualVendorId:', orders.length)
+    
+    // If no orders found, try with original vendorId or email
+    if (orders.length === 0) {
+      orders = await VendorOrder.find({ vendorId })
+        .sort({ createdAt: -1 })
+        .limit(Math.min(limit, 50))
+        .maxTimeMS(5000)
+        .lean()
+      console.log('Found orders with original vendorId:', orders.length)
+      
+      if (orders.length === 0 && vendor && vendor.email) {
+        orders = await VendorOrder.find({ vendorId: vendor.email })
+          .sort({ createdAt: -1 })
+          .limit(Math.min(limit, 50))
+          .maxTimeMS(5000)
+          .lean()
+        console.log('Found orders with email vendorId:', orders.length)
+      }
+    }
 
-    // Simplified response without heavy customer lookup for dashboard
-    const simplifiedOrders = orders.map(order => ({
-      _id: order._id,
-      orderId: order.orderId,
-      customerEmail: order.customerId,
-      vendorTotal: order.vendorTotal,
-      status: order.status,
-      createdAt: order.createdAt,
-      items: order.items || []
-    }))
+    // Fetch customer details for each order
+    const ordersWithCustomerDetails = await Promise.all(
+      orders.map(async (order) => {
+        try {
+          // Find customer details by email (customerId)
+          const customer = await AdminUser.findOne({ 
+            $or: [
+              { userId: order.customerId },
+              { email: order.customerId }
+            ]
+          }).lean()
+          
+          return {
+            _id: order._id,
+            orderId: order.orderId,
+            customerId: order.customerId,
+            customerDetails: customer ? {
+              name: customer.fullName || 'N/A',
+              email: customer.email || order.customerId,
+              phone: customer.phone || 'N/A'
+            } : {
+              name: 'N/A',
+              email: order.customerId,
+              phone: 'N/A'
+            },
+            products: order.items || [],
+            total: order.vendorTotal,
+            subtotal: order.vendorTotal,
+            shipping: 0,
+            tax: 0,
+            status: order.status,
+            createdAt: order.createdAt,
+            shippingAddress: order.shippingAddress || null,
+            paymentId: order.paymentId || null
+          }
+        } catch (error) {
+          console.error('Error fetching customer details for order:', order.orderId, error)
+          return {
+            _id: order._id,
+            orderId: order.orderId,
+            customerId: order.customerId,
+            customerDetails: {
+              name: 'N/A',
+              email: order.customerId,
+              phone: 'N/A'
+            },
+            products: order.items || [],
+            total: order.vendorTotal,
+            subtotal: order.vendorTotal,
+            shipping: 0,
+            tax: 0,
+            status: order.status,
+            createdAt: order.createdAt,
+            shippingAddress: order.shippingAddress || null,
+            paymentId: order.paymentId || null
+          }
+        }
+      })
+    )
 
     return NextResponse.json({ 
       success: true, 
-      orders: simplifiedOrders 
+      orders: ordersWithCustomerDetails 
     })
 
   } catch (error) {

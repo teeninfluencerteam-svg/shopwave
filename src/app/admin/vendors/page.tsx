@@ -258,15 +258,35 @@ Applied: ${new Date(vendor.createdAt).toLocaleDateString()}
 
   const updateProductStatus = async (productId, status) => {
     try {
-      const response = await fetch('/api/admin/vendor-products', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId, status })
-      })
-      
-      if (response.ok) {
-        alert(`Product ${status} successfully`)
-        fetchVendorProducts(selectedVendor._id)
+      if (status === 'active') {
+        // Use the new approve endpoint for better handling
+        const response = await fetch('/api/admin/approve-product', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId })
+        })
+        
+        if (response.ok) {
+          alert('Product approved! It will now show on the website for users to purchase.')
+          fetchVendorProducts(selectedVendor._id)
+        } else {
+          alert('Failed to approve product')
+        }
+      } else {
+        // Use existing endpoint for other status updates
+        const response = await fetch('/api/admin/vendor-products', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId, status })
+        })
+        
+        
+        if (response.ok) {
+          alert(`Product ${status} successfully`)
+          fetchVendorProducts(selectedVendor._id)
+        } else {
+          alert('Failed to update product status')
+        }
       }
     } catch (error) {
       alert('Failed to update product status')

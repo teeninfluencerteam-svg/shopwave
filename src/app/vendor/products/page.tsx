@@ -1,46 +1,50 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { useUser } from '@clerk/nextjs'
 import { Package, Edit, Trash2, Eye, RefreshCw } from 'lucide-react'
 
 export default function MyProducts() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
-  const [vendorData, setVendorData] = useState(null)
-  const { user } = useUser()
+  const [vendorId, setVendorId] = useState(null)
 
   useEffect(() => {
-    const fetchVendorData = async () => {
-      if (!user?.emailAddresses?.[0]?.emailAddress) return
+    const loadVendorData = async () => {
+      const vendorEmail = localStorage.getItem('vendorEmail')
       
-      try {
-        const response = await fetch(`/api/vendor/profile?email=${user.emailAddresses[0].emailAddress}`)
-        const result = await response.json()
-        
-        if (result.success) {
-          setVendorData(result.vendor)
+      if (vendorEmail) {
+        try {
+          const response = await fetch(`/api/vendor/profile?email=${vendorEmail}`)
+          const result = await response.json()
+          
+          if (result.success && result.vendor) {
+            setVendorId(result.vendor._id)
+            return
+          }
+        } catch (error) {
+          console.error('Error fetching vendor profile:', error)
         }
-      } catch (error) {
-        console.error('Error fetching vendor data:', error)
       }
+      
+      // Redirect to login if no email or error
+      window.location.href = '/vendor/login'
     }
     
-    fetchVendorData()
-  }, [user])
+    loadVendorData()
+  }, [])
   
   useEffect(() => {
-    if (vendorData) {
+    if (vendorId) {
       fetchProducts()
     }
-  }, [vendorData])
+  }, [vendorId])
 
   const fetchProducts = async () => {
-    if (!vendorData) return
+    if (!vendorId) return
     
     setLoading(true)
     try {
-      console.log('Fetching products for vendorId:', vendorData._id)
-      const response = await fetch(`/api/vendor/products?vendorId=${vendorData._id}`)
+      console.log('Fetching products for vendorId:', vendorId)
+      const response = await fetch(`/api/vendor/products?vendorId=${vendorId}`)
       const data = await response.json()
       
       console.log('API Response:', data)
@@ -124,7 +128,7 @@ export default function MyProducts() {
         </div>
       </div>
 
-      {!vendorData ? (
+      {!vendorId ? (
         <div className="bg-white rounded-lg shadow p-12 text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-500">Loading vendor data...</p>

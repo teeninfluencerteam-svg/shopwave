@@ -1,31 +1,14 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
-export interface ICategory extends mongoose.Document {
-  name: string;
-  slug: string;
-  description?: string;
-  parent?: mongoose.Types.ObjectId;
-  image?: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-const categorySchema = new mongoose.Schema({
+const CategorySchema = new mongoose.Schema({
   name: { type: String, required: true },
   slug: { type: String, required: true, unique: true },
-  description: { type: String },
-  parent: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
-  image: { type: String },
-}, {
-  timestamps: true
-});
+  image: { type: String, required: true },
+  subcategories: [{ type: String }],
+  isActive: { type: Boolean, default: true },
+  order: { type: Number, default: 0 },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+})
 
-// Add text index for search
-categorySchema.index({ 
-  name: 'text', 
-  description: 'text'
-});
-
-const Category = mongoose.models.Category || mongoose.model<ICategory>('Category', categorySchema);
-
-export default Category;
+export default mongoose.models.Category || mongoose.model('Category', CategorySchema)

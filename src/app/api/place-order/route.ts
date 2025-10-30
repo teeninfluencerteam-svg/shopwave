@@ -26,6 +26,14 @@ export async function POST(request: Request) {
 
     await dbConnect();
     
+    // Fetch customer details
+    const customer = await AdminUser.findOne({ 
+      $or: [
+        { userId },
+        { email: userId }
+      ]
+    }).lean();
+    
     // Generate order ID
     const orderId = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -52,8 +60,15 @@ export async function POST(request: Request) {
       let vendorProduct = null;
       
       try {
+        // First check if item is marked as vendor product
+        if (item.isVendorProduct) {
+          vendorProduct = await VendorProduct.findById(item.id).catch(() => null);
+        }
+        
         // Try multiple ways to find the vendor product
-        vendorProduct = await VendorProduct.findById(item.id).catch(() => null);
+        if (!vendorProduct) {
+          vendorProduct = await VendorProduct.findById(item.id).catch(() => null);
+        }
         
         if (!vendorProduct) {
           vendorProduct = await VendorProduct.findOne({ productId: item.id }).catch(() => null);
@@ -61,11 +76,6 @@ export async function POST(request: Request) {
         
         if (!vendorProduct) {
           vendorProduct = await VendorProduct.findOne({ name: item.name }).catch(() => null);
-        }
-        
-        // Check if item has isVendorProduct flag
-        if (!vendorProduct && item.isVendorProduct) {
-          vendorProduct = await VendorProduct.findOne({}).catch(() => null);
         }
         
       } catch (error) {
@@ -81,6 +91,15 @@ export async function POST(request: Request) {
           orderId,
           vendorId: vendorProduct.vendorId,
           customerId: userId,
+          customerDetails: customer ? {
+            name: customer.fullName || 'N/A',
+            email: customer.email || userId,
+            phone: customer.phone || 'N/A'
+          } : {
+            name: 'N/A',
+            email: userId,
+            phone: 'N/A'
+          },
           items: [{
             productId: item.id,
             name: item.name,
@@ -92,7 +111,8 @@ export async function POST(request: Request) {
           commission: (item.price * item.quantity) * 0.1, // 10% commission
           netAmount: (item.price * item.quantity) * 0.9, // 90% to vendor
           status: 'pending',
-          shippingAddress
+          shippingAddress,
+          paymentId
         });
         
         await vendorOrder.save();

@@ -1,89 +1,62 @@
 import { NextRequest, NextResponse } from 'next/server'
 import dbConnect from '@/lib/dbConnect'
-import Product from '@/models/Product'
-import mongoose from 'mongoose'
+import AdminProduct from '@/models/AdminProduct'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     await dbConnect()
     
-    const products = await Product.find({}).sort({ createdAt: -1 })
-    
+    const products = await AdminProduct.find({}).sort({ createdAt: -1 })
+
     return NextResponse.json({ 
       success: true, 
       products 
     })
-
   } catch (error) {
-    console.error('Error fetching products:', error)
+    console.error('Error fetching admin products:', error)
     return NextResponse.json({ 
       success: false, 
-      error: 'Failed to fetch products',
-      products: []
-    })
+      message: 'Failed to fetch products' 
+    }, { status: 500 })
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function PUT(request: NextRequest) {
   try {
     await dbConnect()
     
-    const data = await request.json()
-    console.log('Received product data:', data)
-    
-    // Generate unique slug
-    const baseSlug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-    const slug = `${baseSlug}-${Date.now()}`
-    
-    // Create product data without any vendor references
-    const productData = {
-      name: data.name,
-      category: data.category,
-      price: {
-        original: Number(data.price),
-        currency: '₹'
-      },
-      image: data.image || '/images/placeholder.jpg',
-      description: data.description || '',
-      quantity: Number(data.stock) || 0,
-      slug: slug,
-      inventory: {
-        inStock: (Number(data.stock) || 0) > 0,
-        lowStockThreshold: 5
-      },
-      status: 'active',
-      shippingCost: 0,
-      taxPercent: 18,
-      ratings: {
-        average: 4.2,
-        count: Math.floor(Math.random() * 50) + 10
-      },
-      returnPolicy: {
-        eligible: true,
-        duration: 7
-      },
-      warranty: '1 Year Warranty'
+    const { productId, status } = await request.json()
+
+    if (!productId || !status) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Product ID and status required' 
+      }, { status: 400 })
     }
-    
-    console.log('Creating product with data:', productData)
-    
-    const product = new Product(productData)
-    const savedProduct = await product.save()
-    
-    console.log('Product saved successfully:', savedProduct._id)
+
+    const product = await AdminProduct.findByIdAndUpdate(
+      productId,
+      { status, updatedAt: new Date() },
+      { new: true }
+    )
+
+    if (!product) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Product not found' 
+      }, { status: 404 })
+    }
 
     return NextResponse.json({ 
       success: true, 
-      product: savedProduct 
+      message: `Product ${status} successfully` 
     })
-
   } catch (error) {
-    console.error('Error creating product:', error)
-    console.error('Error stack:', error.stack)
+    console.error('Error updating product status:', error)
     return NextResponse.json({ 
       success: false, 
-      error: error.message || 'Failed to create product' 
-    })
+      message: 'Failed to update product status' 
+    }, { status: 500 })
   }
 }
 
@@ -91,20 +64,33 @@ export async function DELETE(request: NextRequest) {
   try {
     await dbConnect()
     
-    const { searchParams } = new URL(request.url)
-    const id = searchParams.get('id')
+    const { productId } = await request.json()
 
-    await Product.findOneAndDelete({ id })
+    if (!productId) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Product ID required' 
+      }, { status: 400 })
+    }
+
+    const product = await AdminProduct.findByIdAndDelete(productId)
+
+    if (!product) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'Product not found' 
+      }, { status: 404 })
+    }
 
     return NextResponse.json({ 
-      success: true 
+      success: true, 
+      message: 'Product deleted successfully' 
     })
-
   } catch (error) {
     console.error('Error deleting product:', error)
     return NextResponse.json({ 
       success: false, 
-      error: 'Failed to delete product' 
-    })
+      message: 'Failed to delete product' 
+    }, { status: 500 })
   }
 }

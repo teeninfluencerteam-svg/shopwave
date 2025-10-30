@@ -80,20 +80,11 @@ export async function GET(request: Request) {
                 await client.connect();
                 const db = client.db(process.env.MONGODB_DB_NAME);
                 
-                // Get active vendors (not suspended)
-                const activeVendors = await db.collection('vendors')
-                    .find({ status: { $ne: 'suspended' } })
-                    .project({ _id: 1 })
-                    .toArray();
-                
-                const activeVendorIds = activeVendors.map(v => v._id.toString());
-                
-                // Fetch both regular products and vendor products from active vendors only
+                // Fetch both regular products and approved vendor products
                 const [regularProducts, vendorProducts] = await Promise.all([
                     Product.find({}).lean(),
                     VendorProduct ? VendorProduct.find({ 
-                        status: 'active',
-                        vendorId: { $in: activeVendorIds }
+                        status: 'active'
                     }).lean() : []
                 ]);
                 
@@ -131,7 +122,11 @@ export async function GET(request: Request) {
                     quantity: product.stock,
                     isVendorProduct: true,
                     slug: product.name.toLowerCase().replace(/\s+/g, '-'),
-                    // Convert vendor product price format to match expected format
+                    // Match the exact price format used by other products
+                    price_original: product.originalPrice || product.price,
+                    price_discounted: product.discountPrice || product.price,
+                    price_currency: '₹',
+                    // Also add the price object format
                     price: {
                         original: product.originalPrice || product.price,
                         discounted: product.discountPrice || product.price,

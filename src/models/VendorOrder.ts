@@ -4,6 +4,11 @@ const VendorOrderSchema = new mongoose.Schema({
   orderId: { type: String, required: true },
   vendorId: { type: String, required: true, index: true },
   customerId: { type: String, required: true },
+  customerDetails: {
+    name: String,
+    email: String,
+    phone: String
+  },
   items: [{
     productId: String,
     name: String,
@@ -21,6 +26,7 @@ const VendorOrderSchema = new mongoose.Schema({
     index: true
   },
   shippingAddress: Object,
+  paymentId: String,
   createdAt: { type: Date, default: Date.now }
 })
 
