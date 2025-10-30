@@ -84,6 +84,7 @@ export async function POST(request: NextRequest) {
       name: productData.name,
       category: productData.category,
       subcategory: productData.subcategory,
+      tertiaryCategory: productData.tertiaryCategory,
       price: productData.price,
       originalPrice: productData.originalPrice,
       discountPrice: productData.discountPrice,

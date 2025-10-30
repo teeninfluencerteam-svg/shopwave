@@ -14,6 +14,7 @@ const VendorProductSchema = new mongoose.Schema({
   name: { type: String, required: true },
   category: { type: String, required: true },
   subcategory: { type: String },
+  tertiaryCategory: { type: String },
   price: { type: Number, required: true },
   originalPrice: { type: Number },
   discountPrice: { type: Number },

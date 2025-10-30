@@ -52,7 +52,14 @@ const fashionCategories = [
     image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300',
     href: '/search?subcategory=Trousers'
   },
-
+  {
+    name: 'Formal Shoes',
+    subtitle: 'Footwear Collection',
+    startingPrice: 999,
+    discount: 55,
+    image: 'https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=300',
+    href: '/search?subcategory=Formal%20Shoes'
+  },
   {
     name: 'Casual Shoes',
     subtitle: 'Footwear Collection',

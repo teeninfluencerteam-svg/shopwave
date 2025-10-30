@@ -426,7 +426,8 @@ export default function Home() {
         </div>
       </section>
 
-
+      
+      <FashionCatalog />
 
       <section>
         <h2 className="text-2xl font-bold mb-4 text-center">Featured Products</h2>

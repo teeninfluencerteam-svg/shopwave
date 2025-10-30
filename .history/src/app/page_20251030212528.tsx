@@ -298,6 +298,7 @@ export default function Home() {
         </Carousel>
       </section>
 
+      <FashionCatalog />
 
       {/* <FashionCategories /> */}
 
@@ -425,8 +426,6 @@ export default function Home() {
           </Link>
         </div>
       </section>
-
-
 
       <section>
         <h2 className="text-2xl font-bold mb-4 text-center">Featured Products</h2>
