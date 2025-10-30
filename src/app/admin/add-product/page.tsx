@@ -5,7 +5,9 @@ import Link from 'next/link'
 export default function AddProductPage() {
   const [formData, setFormData] = useState({
     name: '',
-    category: 'Electronics',
+    category: 'Tech',
+    subcategory: '',
+    tertiaryCategory: '',
     price: '',
     description: '',
     image: '',
@@ -26,6 +28,8 @@ export default function AddProductPage() {
         body: JSON.stringify({
           name: formData.name,
           category: formData.category,
+          subcategory: formData.subcategory,
+          tertiaryCategory: formData.tertiaryCategory,
           price: parseInt(formData.price),
           description: formData.description,
           image: formData.image,
@@ -41,7 +45,9 @@ export default function AddProductPage() {
         alert('Product added successfully!')
         setFormData({
           name: '',
-          category: 'Electronics',
+          category: 'Tech',
+          subcategory: '',
+          tertiaryCategory: '',
           price: '',
           description: '',
           image: '',
@@ -90,20 +96,139 @@ export default function AddProductPage() {
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">Category</label>
-            <select
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="Electronics">Electronics</option>
-              <option value="Fashion">Fashion</option>
-              <option value="Home">Home & Garden</option>
-              <option value="Sports">Sports</option>
-              <option value="Books">Books</option>
-            </select>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Category *</label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="Tech">Tech</option>
+                <option value="Home">Home</option>
+                <option value="Fashion">Fashion</option>
+                <option value="Ayurvedic">Ayurvedic</option>
+                <option value="Beauty">Beauty</option>
+                <option value="Groceries">Groceries</option>
+                <option value="Pooja">Pooja</option>
+                <option value="Food & Drinks">Food & Drinks</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium mb-2">Subcategory *</label>
+              <select
+                name="subcategory"
+                value={formData.subcategory || ''}
+                onChange={handleChange}
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">Select Subcategory</option>
+                {formData.category === 'Fashion' && (
+                  <>
+                    <option value="Men">Men</option>
+                    <option value="Women">Women</option>
+                    <option value="Kids">Kids</option>
+                    <option value="Accessories">Accessories</option>
+                  </>
+                )}
+                {formData.category === 'Tech' && (
+                  <>
+                    <option value="Mobiles">Mobiles</option>
+                    <option value="Laptops">Laptops</option>
+                    <option value="Audio">Audio</option>
+                    <option value="Accessories">Accessories</option>
+                  </>
+                )}
+                {formData.category === 'Home' && (
+                  <>
+                    <option value="Decor">Decor</option>
+                    <option value="Lighting">Lighting</option>
+                    <option value="Kitchenware">Kitchenware</option>
+                    <option value="Appliances">Appliances</option>
+                  </>
+                )}
+              </select>
+            </div>
+            
+            {formData.category === 'Fashion' && formData.subcategory && (
+              <div>
+                <label className="block text-sm font-medium mb-2">Product Type *</label>
+                <select
+                  name="tertiaryCategory"
+                  value={formData.tertiaryCategory || ''}
+                  onChange={handleChange}
+                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="">Select Type</option>
+                  {formData.subcategory === 'Men' && (
+                    <>
+                      <option value="Formal-Shirts">Formal Shirts</option>
+                      <option value="Casual-Shirts">Casual Shirts</option>
+                      <option value="T-Shirts">T-Shirts</option>
+                      <option value="Polo-T-Shirts">Polo T-Shirts</option>
+                      <option value="Jeans">Jeans</option>
+                      <option value="Trousers">Trousers</option>
+                      <option value="Formal-Shoes">Formal Shoes</option>
+                      <option value="Casual-Shoes">Casual Shoes</option>
+                      <option value="Sneakers">Sneakers</option>
+                      <option value="Jackets">Jackets</option>
+                      <option value="Hoodies">Hoodies</option>
+                      <option value="Watches">Watches</option>
+                    </>
+                  )}
+                  {formData.subcategory === 'Women' && (
+                    <>
+                      <option value="Dresses">Dresses</option>
+                      <option value="Sarees">Sarees</option>
+                      <option value="Kurtis">Kurtis</option>
+                      <option value="Tops">Tops</option>
+                      <option value="Jeans">Jeans</option>
+                      <option value="Leggings">Leggings</option>
+                      <option value="Skirts">Skirts</option>
+                      <option value="Heels">Heels</option>
+                      <option value="Flats">Flats</option>
+                      <option value="Sandals">Sandals</option>
+                      <option value="Handbags">Handbags</option>
+                      <option value="Jewelry">Jewelry</option>
+                    </>
+                  )}
+                  {formData.subcategory === 'Kids' && (
+                    <>
+                      <option value="Boys-T-Shirts">Boys T-Shirts</option>
+                      <option value="Girls-Dresses">Girls Dresses</option>
+                      <option value="Boys-Shirts">Boys Shirts</option>
+                      <option value="Girls-Tops">Girls Tops</option>
+                      <option value="Kids-Jeans">Kids Jeans</option>
+                      <option value="Kids-Shorts">Kids Shorts</option>
+                      <option value="Kids-Shoes">Kids Shoes</option>
+                      <option value="School-Uniforms">School Uniforms</option>
+                      <option value="Party-Wear">Party Wear</option>
+                      <option value="Sleepwear">Sleepwear</option>
+                      <option value="Winter-Wear">Winter Wear</option>
+                      <option value="Accessories">Accessories</option>
+                    </>
+                  )}
+                  {formData.subcategory === 'Accessories' && (
+                    <>
+                      <option value="Watches">Watches</option>
+                      <option value="Sunglasses">Sunglasses</option>
+                      <option value="Belts">Belts</option>
+                      <option value="Wallets">Wallets</option>
+                      <option value="Bags">Bags</option>
+                      <option value="Jewelry">Jewelry</option>
+                      <option value="Caps-Hats">Caps & Hats</option>
+                      <option value="Scarves">Scarves</option>
+                      <option value="Ties">Ties</option>
+                      <option value="Hair-Accessories">Hair Accessories</option>
+                      <option value="Phone-Cases">Phone Cases</option>
+                      <option value="Perfumes">Perfumes</option>
+                    </>
+                  )}
+                </select>
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">

@@ -2,9 +2,10 @@
 'use client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useProductStore } from '@/lib/productStore'
+import { FASHION_PRODUCTS } from '@/lib/data/fashion'
 import { useMemo } from 'react'
 
-const mainCategories = ['Tech', 'Home', 'Food & Drinks'];
+const mainCategories = ['Tech', 'Home', 'Fashion', 'New Arrivals', 'Food & Drinks'];
 
 export default function CategoryPills() {
   const router = useRouter(); 
@@ -18,7 +19,12 @@ export default function CategoryPills() {
       return ['All', ...mainCategories];
     }
     
-    const subcategories = [...new Set(products
+    let allProducts = products;
+    if (activeCategory === 'Fashion') {
+      allProducts = [...products, ...FASHION_PRODUCTS];
+    }
+    
+    const subcategories = [...new Set(allProducts
       .filter(p => p.category === activeCategory && p.subcategory)
       .map(p => p.subcategory!))
     ];

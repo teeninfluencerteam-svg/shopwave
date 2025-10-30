@@ -12,6 +12,7 @@ const AdminProductSchema = new mongoose.Schema({
   images: [String],
   category: { type: String, required: true },
   subcategory: String,
+  tertiaryCategory: String,
   quantity: { type: Number, default: 0 },
   isNewProduct: { type: Boolean, default: false },
   isFeatured: { type: Boolean, default: false },

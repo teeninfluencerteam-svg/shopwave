@@ -7,15 +7,23 @@ import { Button } from '@/components/ui/button'
 import { PlusCircle, Trash2, Upload } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 
-const categories = ['Tech', 'Home', 'Ayurvedic', 'Beauty', 'Groceries', 'Pooja', 'Food & Drinks']
+const categories = ['Tech', 'Home', 'Fashion', 'Ayurvedic', 'Beauty', 'Groceries', 'Pooja', 'Food & Drinks']
 const subcategories: Record<string, string[]> = {
     Tech: ['Mobiles', 'Laptops', 'Audio', 'Cameras', 'Wearables', 'Accessories', 'Tablets'],
     Home: ['Decor', 'Lighting', 'Kitchenware', 'Wall Decor', 'Appliances', 'Smart-Home', 'Puja-Essentials', 'Bathroom-Accessories', 'Cleaning-Supplies', 'Household-Appliances', 'HomeDecor', 'Home-storage'],
+    Fashion: ['Men', 'Women', 'Kids', 'Accessories'],
     Ayurvedic: ['Ayurvedic Medicine', 'Homeopathic Medicines', 'Personal-Care'],
     Beauty: ['Makeup', 'Skincare', 'Hair-Care'],
     Groceries: ['Staples', 'Snacks', 'Oils'],
     Pooja: ['Dhoop', 'Agarbatti', 'Aasan and Mala', 'Photo Frame'],
     'Food & Drinks': ['Beverages', 'Dry Fruits', 'Healthy Juice']
+}
+
+const tertiaryCategories: Record<string, string[]> = {
+    Men: ['Formal-Shirts', 'Casual-Shirts', 'T-Shirts', 'Polo-T-Shirts', 'Jeans', 'Trousers', 'Formal-Shoes', 'Casual-Shoes', 'Sneakers', 'Jackets', 'Hoodies', 'Watches'],
+    Women: ['Dresses', 'Sarees', 'Kurtis', 'Tops', 'Jeans', 'Leggings', 'Skirts', 'Heels', 'Flats', 'Sandals', 'Handbags', 'Jewelry'],
+    Kids: ['Boys-T-Shirts', 'Girls-Dresses', 'Boys-Shirts', 'Girls-Tops', 'Kids-Jeans', 'Kids-Shorts', 'Kids-Shoes', 'School-Uniforms', 'Party-Wear', 'Sleepwear', 'Winter-Wear', 'Accessories'],
+    Accessories: ['Watches', 'Sunglasses', 'Belts', 'Wallets', 'Bags', 'Jewelry', 'Caps-Hats', 'Scarves', 'Ties', 'Hair-Accessories', 'Phone-Cases', 'Perfumes']
 }
 
 interface ProductFormProps {
@@ -101,6 +109,15 @@ export default function ProductForm({ product, onSave, onCancel }: ProductFormPr
             category: category,
             subcategory: subcategories[category]?.[0] || '', // Reset subcategory
             tertiaryCategory: '', // Reset tertiary category
+        }));
+    };
+
+    const handleSubcategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const subcategory = e.target.value;
+        setFormData(prev => ({
+            ...prev,
+            subcategory: subcategory,
+            tertiaryCategory: tertiaryCategories[subcategory]?.[0] || '', // Reset tertiary category
         }));
     };
 
@@ -244,13 +261,19 @@ export default function ProductForm({ product, onSave, onCancel }: ProductFormPr
                 </Button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Select name="category" label="Category" value={formData.category} onChange={handleCategoryChange}>
                     {categories.map(c => <option key={c} value={c}>{c}</option>)}
                 </Select>
-                <Select name="subcategory" label="Subcategory" value={formData.subcategory}>
+                <Select name="subcategory" label="Subcategory" value={formData.subcategory} onChange={handleSubcategoryChange}>
                     {(subcategories[formData.category || 'Tech'] || []).map(sc => <option key={sc} value={sc}>{sc.replace(/-/g, ' ')}</option>)}
                 </Select>
+                {formData.category === 'Fashion' && (
+                    <Select name="tertiaryCategory" label="Product Type" value={formData.tertiaryCategory}>
+                        <option value="">Select Type</option>
+                        {(tertiaryCategories[formData.subcategory] || []).map(tc => <option key={tc} value={tc}>{tc.replace(/-/g, ' ')}</option>)}
+                    </Select>
+                )}
             </div>
             
             <div className="rounded-md border p-3 space-y-3">

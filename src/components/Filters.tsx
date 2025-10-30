@@ -3,6 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useMemo } from 'react';
 import { useProductStore } from '@/lib/productStore';
+import { FASHION_PRODUCTS } from '@/lib/data/fashion';
 
 export default function Filters(){
   const router = useRouter(); 
@@ -28,12 +29,17 @@ export default function Filters(){
 
     if (!currentCategory) return { availableSubcategories: [], activeSubcategory: null, availableTertiaryCategories: [], activeTertiaryCategory: null };
     
-    const subcategories = [...new Set(products
+    let allProducts = products;
+    if (currentCategory === 'Fashion') {
+      allProducts = [...products, ...FASHION_PRODUCTS];
+    }
+    
+    const subcategories = [...new Set(allProducts
       .filter(p => p.category === currentCategory && p.subcategory)
       .map(p => p.subcategory!)
     )];
 
-    const tertiaryCategories = currentSubcategory ? [...new Set(products
+    const tertiaryCategories = currentSubcategory ? [...new Set(allProducts
       .filter(p => p.subcategory === currentSubcategory && p.tertiaryCategory)
       .map(p => p.tertiaryCategory!)
     )] : [];

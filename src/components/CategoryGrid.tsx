@@ -10,12 +10,10 @@ interface CategoryGridProps {
 }
 
 const defaultCategories = [
-  { _id: '1', name: 'Mobile Accessories', slug: 'mobile-accessories', image: '/images/placeholder.jpg' },
-  { _id: '2', name: 'Computer Accessories', slug: 'computer-accessories', image: '/images/placeholder.jpg' },
-  { _id: '3', name: 'Audio', slug: 'audio', image: '/images/placeholder.jpg' },
-  { _id: '4', name: 'Lighting', slug: 'lighting', image: '/images/placeholder.jpg' },
-  { _id: '5', name: 'Power & Cables', slug: 'power-cables', image: '/images/placeholder.jpg' },
-  { _id: '6', name: 'Kitchen Appliances', slug: 'kitchen-appliances', image: '/images/placeholder.jpg' }
+  { _id: '1', name: 'Tech', slug: 'tech', image: '/images/placeholder.jpg' },
+  { _id: '2', name: 'Home', slug: 'home', image: '/images/placeholder.jpg' },
+  { _id: '3', name: 'Fashion', slug: 'fashion', image: '/images/placeholder.jpg' },
+  { _id: '4', name: 'New Arrivals', slug: 'new-arrivals', image: '/images/placeholder.jpg' }
 ]
 
 export default function CategoryGrid({ buttonColor }: CategoryGridProps) {
@@ -25,11 +23,14 @@ export default function CategoryGrid({ buttonColor }: CategoryGridProps) {
     fetch('/api/categories')
       .then(res => res.json())
       .then(data => {
-        if (data.success && data.categories.length > 0) {
+        if (data.success && data.categories && data.categories.length > 0) {
           setCategories(data.categories)
+        } else {
+          console.log('No categories from API, using defaults')
         }
       })
-      .catch(() => {
+      .catch(error => {
+        console.error('Categories API error:', error)
         // Keep default categories on error
       })
   }, [])

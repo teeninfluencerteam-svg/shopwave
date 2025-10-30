@@ -10,7 +10,7 @@ import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@/context/ClerkAuthContext'
 import { Button } from './ui/button'
 
-const mainCategories = ['Tech', 'Home', 'New Arrivals'];
+const mainCategories = ['Tech', 'Home', 'Fashion', 'New Arrivals'];
 
 export default function TopBar() {
   const { user } = useAuth();

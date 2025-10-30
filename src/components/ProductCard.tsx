@@ -86,6 +86,14 @@ export default function ProductCard({ p, product, suggest }: { p?: Product; prod
             </div>
           )}
         </Link>
+        
+        {/* Discount Badge */}
+        {productData.price.discounted && productData.price.original && (
+          <div className="absolute left-1 top-1 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold z-10">
+            {Math.round(((productData.price.original - productData.price.discounted) / productData.price.original) * 100)}% OFF
+          </div>
+        )}
+        
         <div className="absolute right-1 top-1">
           <WishlistButton id={productData.id} />
         </div>

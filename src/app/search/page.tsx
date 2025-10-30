@@ -18,6 +18,9 @@ import CategoryGrid from '@/components/CategoryGrid';
 import { cn } from '@/lib/utils';
 import { useProductStore } from '@/lib/productStore';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { FASHION_PRODUCTS } from '@/lib/data/fashion';
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
+import OfferCard from '@/components/OfferCard';
 
 const techCategories = [
   { name: 'Accessories', href: '/search?category=Tech&subcategory=Accessories', image: 'https://ik.imagekit.io/b5qewhvhb/e%20commers/tach/electronics%20aaitams/0294.webp?updatedAt=1756627296166', dataAiHint: 'mobile accessories' },
@@ -71,6 +74,22 @@ const groceriesCategories = [
   { name: 'Beverages', href: '/search?category=Groceries&subcategory=Beverages', image: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?q=80&w=800&auto=format&fit=crop', dataAiHint: 'healthy beverages' },
   { name: 'Dry Fruits', href: '/search?category=Groceries&subcategory=Dry%20Fruits', image: 'https://images.unsplash.com/photo-1607349913338-fca6f7fc42d0?q=80&w=800&auto=format&fit=crop', dataAiHint: 'premium dry fruits' },
   { name: 'Healthy Juice', href: '/search?category=Groceries&subcategory=Healthy%20Juice', image: 'https://images.unsplash.com/photo-1578852632225-17a4c48a472c?q=80&w=800&auto=format&fit=crop', dataAiHint: 'healthy juices' },
+];
+
+const fashionMainCategories = [
+  { name: 'Men', href: '/search?category=Fashion&subcategory=Men', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400', dataAiHint: 'mens fashion' },
+  { name: 'Women', href: '/search?category=Fashion&subcategory=Women', image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400', dataAiHint: 'womens fashion' },
+  { name: 'Kids', href: '/search?category=Fashion&subcategory=Kids', image: 'https://images.unsplash.com/photo-1503944168849-4d4b47e4b1b6?w=400', dataAiHint: 'kids fashion' },
+  { name: 'Accessories', href: '/search?category=Fashion&subcategory=Accessories', image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300', dataAiHint: 'accessories' },
+];
+
+const fashionCategories = [
+  { name: 'T-Shirts', href: '/search?category=Fashion&subcategory=T-Shirts', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300', dataAiHint: 't-shirts' },
+  { name: 'Jeans', href: '/search?category=Fashion&subcategory=Jeans', image: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=300', dataAiHint: 'jeans' },
+  { name: 'Shirts', href: '/search?category=Fashion&subcategory=Shirts', image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=300', dataAiHint: 'shirts' },
+  { name: 'Dresses', href: '/search?category=Fashion&subcategory=Dresses', image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=300', dataAiHint: 'dresses' },
+  { name: 'Shoes', href: '/search?category=Fashion&subcategory=Shoes', image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=300', dataAiHint: 'shoes' },
+  { name: 'Accessories', href: '/search?category=Fashion&subcategory=Accessories', image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300', dataAiHint: 'accessories' },
 ];
 
 function CategoryHeader({ title, description, linkText, bannerImages, categories, bannerColor = "bg-gray-100", buttonColor = "bg-primary" }: { title: string, description: string, linkText: string, bannerImages: string[], categories?: any[], bannerColor?: string, buttonColor?:string }) {
@@ -177,7 +196,9 @@ function SearchContent() {
   
   const list = useMemo(() => {
     try {
-      return filterProducts(products, opts);
+      // Combine API products with Fashion products
+      const allProducts = [...products, ...FASHION_PRODUCTS.filter(p => p.quantity > 0)];
+      return filterProducts(allProducts, opts);
     } catch (err) {
       console.error('Error filtering products:', err);
       setError('Failed to load products. Please try again.');
@@ -378,6 +399,157 @@ function SearchContent() {
              return null;
         case 'Pooja':
             return null;
+        case 'Fashion':
+            return (
+                <div className="mb-8 space-y-8">
+                  <CategoryHeader 
+                      title="Fashion & Style"
+                      description="Discover the latest trends in fashion with our curated collection of clothing and accessories."
+                      linkText="Shop Fashion"
+                      bannerImages={[
+                          "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400",
+                          "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400",
+                          "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400",
+                          "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400",
+                          "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400"
+                      ]}
+                      bannerColor="bg-rose-50"
+                      buttonColor="bg-rose-600 hover:bg-rose-700"
+                  />
+                  
+                  <section>
+                    <h2 className="text-2xl font-bold mb-4 text-center">Top Fashion Offers</h2>
+                     <Carousel
+                      opts={{
+                        align: "start",
+                        loop: true,
+                      }}
+                      className="w-full"
+                    >
+                      <CarouselContent className="-ml-1 sm:-ml-2 md:-ml-4">
+                        <CarouselItem className="pl-1 sm:pl-2 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4"><OfferCard title="T-Shirts" products={FASHION_PRODUCTS.filter(p => p.subcategory === 'T-Shirts').slice(0, 6)} href="/search?category=Fashion&subcategory=T-Shirts"/></CarouselItem>
+                        <CarouselItem className="pl-1 sm:pl-2 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4"><OfferCard title="Jeans" products={FASHION_PRODUCTS.filter(p => p.subcategory === 'Jeans').slice(0, 6)} href="/search?category=Fashion&subcategory=Jeans"/></CarouselItem>
+                        <CarouselItem className="pl-1 sm:pl-2 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4"><OfferCard title="Dresses" products={FASHION_PRODUCTS.filter(p => p.subcategory === 'Dresses').slice(0, 6)} href="/search?category=Fashion&subcategory=Dresses"/></CarouselItem>
+                        <CarouselItem className="pl-1 sm:pl-2 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4"><OfferCard title="Shoes" products={FASHION_PRODUCTS.filter(p => p.subcategory === 'Shoes').slice(0, 6)} href="/search?category=Fashion&subcategory=Shoes"/></CarouselItem>
+                      </CarouselContent>
+                    </Carousel>
+                  </section>
+                  
+                  <section>
+                    <h2 className="text-2xl font-bold mb-8 text-center">Shop by Category</h2>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                      <Link href="/search?category=Fashion&subcategory=Men" className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+                        <div className="relative h-48 md:h-56">
+                          <Image
+                            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400"
+                            alt="Men's Fashion"
+                            fill
+                            className="object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                          <div className="absolute bottom-0 left-0 p-4">
+                            <h3 className="text-white text-xl font-bold mb-1">Men's Fashion</h3>
+                            <p className="text-white/80 text-sm">Shirts, Jeans, T-Shirts & More</p>
+                          </div>
+                        </div>
+                      </Link>
+
+                      <Link href="/search?category=Fashion&subcategory=Women" className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+                        <div className="relative h-48 md:h-56">
+                          <Image
+                            src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400"
+                            alt="Women's Fashion"
+                            fill
+                            className="object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                          <div className="absolute bottom-0 left-0 p-4">
+                            <h3 className="text-white text-xl font-bold mb-1">Women's Fashion</h3>
+                            <p className="text-white/80 text-sm">Dresses, Sarees, Kurtis & More</p>
+                          </div>
+                        </div>
+                      </Link>
+
+                      <Link href="/search?category=Fashion&subcategory=Kids" className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+                        <div className="relative h-48 md:h-56">
+                          <Image
+                            src="https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=400"
+                            alt="Kids Fashion"
+                            fill
+                            className="object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                          <div className="absolute bottom-0 left-0 p-4">
+                            <h3 className="text-white text-xl font-bold mb-1">Kids Fashion</h3>
+                            <p className="text-white/80 text-sm">Cute & Comfortable Clothing</p>
+                          </div>
+                        </div>
+                      </Link>
+
+                      <Link href="/search?category=Fashion&subcategory=Accessories" className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+                        <div className="relative h-48 md:h-56">
+                          <Image
+                            src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400"
+                            alt="Fashion Accessories"
+                            fill
+                            className="object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                          <div className="absolute bottom-0 left-0 p-4">
+                            <h3 className="text-white text-xl font-bold mb-1">Accessories</h3>
+                            <p className="text-white/80 text-sm">Bags, Watches, Jewelry & More</p>
+                          </div>
+                        </div>
+                      </Link>
+                    </div>
+                  </section>
+                  
+                  <section>
+                    <h2 className="text-2xl font-bold mb-6 text-center">Limited Time Deals</h2>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                      <Link href="/search?category=Fashion&subcategory=T-Shirts" className="relative block overflow-hidden rounded-xl shadow-lg group">
+                        <Image src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400" alt="T-Shirts Deal" width={300} height={200} className="w-full h-32 sm:h-40 object-cover group-hover:scale-105 transition-transform duration-300" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                        <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">70% OFF</div>
+                        <div className="absolute bottom-0 left-0 p-3">
+                          <h3 className="text-white font-bold text-sm sm:text-base">T-Shirts Collection</h3>
+                          <p className="text-white/80 text-xs">Starting ₹299</p>
+                        </div>
+                      </Link>
+
+                      <Link href="/search?category=Fashion&subcategory=Jeans" className="relative block overflow-hidden rounded-xl shadow-lg group">
+                        <Image src="https://images.unsplash.com/photo-1542272604-787c3835535d?w=400" alt="Jeans Deal" width={300} height={200} className="w-full h-32 sm:h-40 object-cover group-hover:scale-105 transition-transform duration-300" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                        <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">60% OFF</div>
+                        <div className="absolute bottom-0 left-0 p-3">
+                          <h3 className="text-white font-bold text-sm sm:text-base">Premium Jeans</h3>
+                          <p className="text-white/80 text-xs">Starting ₹799</p>
+                        </div>
+                      </Link>
+
+                      <Link href="/search?category=Fashion&subcategory=Dresses" className="relative block overflow-hidden rounded-xl shadow-lg group">
+                        <Image src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400" alt="Dresses Deal" width={300} height={200} className="w-full h-32 sm:h-40 object-cover group-hover:scale-105 transition-transform duration-300" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                        <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">65% OFF</div>
+                        <div className="absolute bottom-0 left-0 p-3">
+                          <h3 className="text-white font-bold text-sm sm:text-base">Beautiful Dresses</h3>
+                          <p className="text-white/80 text-xs">Starting ₹599</p>
+                        </div>
+                      </Link>
+
+                      <Link href="/search?category=Fashion&subcategory=Shoes" className="relative block overflow-hidden rounded-xl shadow-lg group">
+                        <Image src="https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400" alt="Shoes Deal" width={300} height={200} className="w-full h-32 sm:h-40 object-cover group-hover:scale-105 transition-transform duration-300" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                        <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">55% OFF</div>
+                        <div className="absolute bottom-0 left-0 p-3">
+                          <h3 className="text-white font-bold text-sm sm:text-base">Footwear Collection</h3>
+                          <p className="text-white/80 text-xs">Starting ₹999</p>
+                        </div>
+                      </Link>
+                    </div>
+                  </section>
+                </div>
+            )
         case 'Groceries':
             return <CategoryHeader 
                 title="Fresh Groceries & Daily Needs"
@@ -402,8 +574,498 @@ function SearchContent() {
 
   const renderTertiaryCategoryHeader = () => {
       const sub = opts.subcategory;
-      if (!sub || opts.tertiaryCategory) return null;
+      const tertiary = opts.tertiaryCategory;
       
+      // Handle tertiary category headers (like Dresses, T-Shirts, etc.)
+      if (tertiary && opts.category === 'Fashion') {
+        const tertiaryData = {
+          'Dresses': {
+            title: 'Beautiful Dresses Collection',
+            description: 'Elegant dresses for every occasion - from casual to formal wear.',
+            images: [
+              'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600',
+              'https://images.unsplash.com/photo-1566479179817-c0b5b4b4b1e5?w=600',
+              'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=600'
+            ],
+            color: 'bg-pink-50',
+            button: 'bg-pink-600 hover:bg-pink-700',
+            offer: { discount: 65, startingPrice: 599 }
+          },
+          'T-Shirts': {
+            title: 'Premium T-Shirts Collection',
+            description: 'Comfortable and stylish t-shirts for everyday wear.',
+            images: [
+              'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600',
+              'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600',
+              'https://images.unsplash.com/photo-1583743814966-8936f37f4678?w=600'
+            ],
+            color: 'bg-blue-50',
+            button: 'bg-blue-600 hover:bg-blue-700',
+            offer: { discount: 70, startingPrice: 299 }
+          },
+          'Jeans': {
+            title: 'Premium Jeans Collection',
+            description: 'High-quality denim jeans in various fits and styles.',
+            images: [
+              'https://images.unsplash.com/photo-1542272604-787c3835535d?w=600',
+              'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=600',
+              'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600'
+            ],
+            color: 'bg-indigo-50',
+            button: 'bg-indigo-600 hover:bg-indigo-700',
+            offer: { discount: 60, startingPrice: 799 }
+          },
+          'Formal-Shirts': {
+            title: 'Formal Shirts Collection',
+            description: 'Professional formal shirts for office and business wear.',
+            images: [
+              'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600',
+              'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600',
+              'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=600'
+            ],
+            color: 'bg-gray-50',
+            button: 'bg-gray-600 hover:bg-gray-700',
+            offer: { discount: 40, startingPrice: 899 }
+          },
+          'Casual-Shirts': {
+            title: 'Casual Shirts Collection',
+            description: 'Comfortable casual shirts for everyday style.',
+            images: [
+              'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600',
+              'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600',
+              'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=600'
+            ],
+            color: 'bg-green-50',
+            button: 'bg-green-600 hover:bg-green-700',
+            offer: { discount: 35, startingPrice: 699 }
+          },
+          'Watches': {
+            title: 'Premium Watches Collection',
+            description: 'Stylish watches for every occasion and style.',
+            images: [
+              'https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=600',
+              'https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?w=600',
+              'https://images.unsplash.com/photo-1434056886845-dac89ffe9b56?w=600'
+            ],
+            color: 'bg-amber-50',
+            button: 'bg-amber-600 hover:bg-amber-700',
+            offer: { discount: 60, startingPrice: 999 }
+          },
+          'Kurtis': {
+            title: 'Designer Kurtis Collection',
+            description: 'Traditional and modern kurtis for every occasion.',
+            images: [
+              'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=600',
+              'https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=600',
+              'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600'
+            ],
+            color: 'bg-purple-50',
+            button: 'bg-purple-600 hover:bg-purple-700',
+            offer: { discount: 45, startingPrice: 799 }
+          },
+          'Sarees': {
+            title: 'Elegant Sarees Collection',
+            description: 'Beautiful traditional sarees for special occasions.',
+            images: [
+              'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600',
+              'https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=600',
+              'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=600'
+            ],
+            color: 'bg-rose-50',
+            button: 'bg-rose-600 hover:bg-rose-700',
+            offer: { discount: 50, startingPrice: 1299 }
+          },
+          'Polo-T-Shirts': {
+            title: 'Polo T-Shirts Collection',
+            description: 'Classic polo t-shirts for smart casual look.',
+            images: [
+              'https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=600',
+              'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600'
+            ],
+            color: 'bg-teal-50',
+            button: 'bg-teal-600 hover:bg-teal-700',
+            offer: { discount: 45, startingPrice: 599 }
+          },
+          'Trousers': {
+            title: 'Premium Trousers Collection',
+            description: 'Formal and casual trousers for every occasion.',
+            images: [
+              'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=600'
+            ],
+            color: 'bg-slate-50',
+            button: 'bg-slate-600 hover:bg-slate-700',
+            offer: { discount: 35, startingPrice: 999 }
+          },
+          'Tops': {
+            title: 'Stylish Tops Collection',
+            description: 'Trendy tops for modern women.',
+            images: [
+              'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=600'
+            ],
+            color: 'bg-pink-50',
+            button: 'bg-pink-600 hover:bg-pink-700',
+            offer: { discount: 60, startingPrice: 499 }
+          },
+          'Leggings': {
+            title: 'Comfortable Leggings Collection',
+            description: 'Stretchable leggings for comfort and style.',
+            images: [
+              'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=600'
+            ],
+            color: 'bg-fuchsia-50',
+            button: 'bg-fuchsia-600 hover:bg-fuchsia-700',
+            offer: { discount: 50, startingPrice: 399 }
+          },
+          'Sunglasses': {
+            title: 'Premium Sunglasses Collection',
+            description: 'Stylish sunglasses for UV protection and fashion.',
+            images: [
+              'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600'
+            ],
+            color: 'bg-yellow-50',
+            button: 'bg-yellow-600 hover:bg-yellow-700',
+            offer: { discount: 50, startingPrice: 599 }
+          },
+          'Belts': {
+            title: 'Leather Belts Collection',
+            description: 'Premium leather belts for formal and casual wear.',
+            images: [
+              'https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=600'
+            ],
+            color: 'bg-amber-50',
+            button: 'bg-amber-600 hover:bg-amber-700',
+            offer: { discount: 45, startingPrice: 399 }
+          }
+        };
+        
+        const tertiaryInfo = tertiaryData[tertiary as keyof typeof tertiaryData];
+        if (tertiaryInfo) {
+          return (
+            <div className="mb-8 space-y-6">
+              <CategoryHeader 
+                title={tertiaryInfo.title}
+                description={tertiaryInfo.description}
+                linkText="Shop Now"
+                bannerImages={tertiaryInfo.images}
+                bannerColor={tertiaryInfo.color}
+                buttonColor={tertiaryInfo.button}
+              />
+              
+              {/* Enhanced Offer Section */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Main Deal */}
+                <div className="md:col-span-2 relative overflow-hidden rounded-2xl bg-gradient-to-r from-red-500 to-pink-600 p-6 text-white">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div>
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-12 -translate-x-12"></div>
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="bg-white text-red-500 px-3 py-1 rounded-full text-sm font-bold">
+                        MEGA SALE
+                      </div>
+                      <div className="bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-bold">
+                        {tertiaryInfo.offer.discount}% OFF
+                      </div>
+                    </div>
+                    <h3 className="text-3xl font-bold mb-2">
+                      {tertiary.replace(/-/g, ' ')} Collection
+                    </h3>
+                    <p className="text-xl mb-3">
+                      Starting ₹{tertiaryInfo.offer.startingPrice}
+                    </p>
+                    <p className="text-sm opacity-90 mb-4">
+                      Premium quality • Fast delivery • Easy returns
+                    </p>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="bg-white/20 px-2 py-1 rounded">⏰ Limited Time</span>
+                      <span className="bg-white/20 px-2 py-1 rounded">🚚 Free Shipping</span>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Side Offers */}
+                <div className="space-y-4">
+                  <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-4 text-white">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold">Buy 2</div>
+                      <div className="text-sm">Get 1 FREE</div>
+                      <div className="text-xs mt-1 opacity-90">On selected items</div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-gradient-to-r from-blue-500 to-cyan-600 rounded-xl p-4 text-white">
+                    <div className="text-center">
+                      <div className="text-lg font-bold">Extra 10% OFF</div>
+                      <div className="text-sm">On orders above ₹1999</div>
+                      <div className="text-xs mt-1 opacity-90">Use code: SAVE10</div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-gradient-to-r from-purple-500 to-indigo-600 rounded-xl p-4 text-white">
+                    <div className="text-center">
+                      <div className="text-lg font-bold">Free Delivery</div>
+                      <div className="text-sm">On all orders</div>
+                      <div className="text-xs mt-1 opacity-90">No minimum order</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Flash Sale Timer */}
+              <div className="bg-yellow-50 border-2 border-yellow-200 rounded-2xl p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-yellow-500 text-white p-2 rounded-full">
+                      ⚡
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gray-800">Flash Sale Ends Soon!</h4>
+                      <p className="text-sm text-gray-600">Hurry up! Limited stock available</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-red-600">23:59:45</div>
+                    <div className="text-xs text-gray-500">Hours left</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+        
+        // Default fallback for any tertiary category not defined above
+        return (
+          <div className="mb-8 space-y-6">
+            <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-6 text-white">
+              <div className="text-center">
+                <div className="inline-block bg-white text-blue-600 px-4 py-2 rounded-full text-lg font-bold mb-3">
+                  SPECIAL OFFER
+                </div>
+                <h3 className="text-2xl font-bold mb-2">
+                  {tertiary.replace(/-/g, ' ')} Collection
+                </h3>
+                <p className="text-xl mb-3">
+                  Great Deals Available!
+                </p>
+                <div className="flex justify-center gap-2 text-sm">
+                  <span className="bg-white/20 px-2 py-1 rounded">🚚 Free Shipping</span>
+                  <span className="bg-white/20 px-2 py-1 rounded">💯 Quality Assured</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+      
+      if (!sub || tertiary) return null;
+      
+      // Fashion subcategory headers
+      if (opts.category === 'Fashion' && sub) {
+        const subcategoryData = {
+          'Men': {
+            title: 'Men\'s Fashion',
+            description: 'Discover stylish and comfortable clothing for men.',
+            images: [
+              'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
+              'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400',
+              'https://images.unsplash.com/photo-1542272604-787c3835535d?w=400'
+            ],
+            color: 'bg-blue-50',
+            button: 'bg-blue-600 hover:bg-blue-700',
+            categories: [
+              { name: 'Formal Shirts', href: '/search?category=Fashion&subcategory=Men&tertiaryCategory=Formal-Shirts', image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=300', price: 899, discount: 40 },
+              { name: 'Casual Shirts', href: '/search?category=Fashion&subcategory=Men&tertiaryCategory=Casual-Shirts', image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=300', price: 699, discount: 35 },
+              { name: 'T-Shirts', href: '/search?category=Fashion&subcategory=Men&tertiaryCategory=T-Shirts', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300', price: 299, discount: 70 },
+              { name: 'Polo T-Shirts', href: '/search?category=Fashion&subcategory=Men&tertiaryCategory=Polo-T-Shirts', image: 'https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=300', price: 599, discount: 45 },
+              { name: 'Jeans', href: '/search?category=Fashion&subcategory=Men&tertiaryCategory=Jeans', image: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=300', price: 799, discount: 60 },
+              { name: 'Trousers', href: '/search?category=Fashion&subcategory=Men&tertiaryCategory=Trousers', image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300', price: 999, discount: 35 },
+              { name: 'Formal Shoes', href: '/search?category=Fashion&subcategory=Men&tertiaryCategory=Formal-Shoes', image: 'https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=300', price: 999, discount: 55 },
+              { name: 'Casual Shoes', href: '/search?category=Fashion&subcategory=Men&tertiaryCategory=Casual-Shoes', image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=300', price: 999, discount: 55 },
+              { name: 'Sneakers', href: '/search?category=Fashion&subcategory=Men&tertiaryCategory=Sneakers', image: 'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=300', price: 999, discount: 55 },
+              { name: 'Jackets', href: '/search?category=Fashion&subcategory=Men&tertiaryCategory=Jackets', image: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=300', price: 2499, discount: 30 },
+              { name: 'Hoodies', href: '/search?category=Fashion&subcategory=Men&tertiaryCategory=Hoodies', image: 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=300', price: 1499, discount: 45 },
+              { name: 'Watches', href: '/search?category=Fashion&subcategory=Men&tertiaryCategory=Watches', image: 'https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=300', price: 999, discount: 60 }
+            ]
+          },
+          'Women': {
+            title: 'Women\'s Fashion',
+            description: 'Elegant and trendy fashion for modern women.',
+            images: [
+              'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400',
+              'https://images.unsplash.com/photo-1566479179817-c0b5b4b4b1e5?w=400',
+              'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=400'
+            ],
+            color: 'bg-pink-50',
+            button: 'bg-pink-600 hover:bg-pink-700',
+            categories: [
+              { name: 'Dresses', href: '/search?category=Fashion&subcategory=Women&tertiaryCategory=Dresses', image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=400&fit=crop&crop=center', price: 599, discount: 65 },
+              { name: 'Sarees', href: '/search?category=Fashion&subcategory=Women&tertiaryCategory=Sarees', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400&h=400&fit=crop&crop=center', price: 1299, discount: 50 },
+              { name: 'Kurtis', href: '/search?category=Fashion&subcategory=Women&tertiaryCategory=Kurtis', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400&h=400&fit=crop&crop=center', price: 799, discount: 45 },
+              { name: 'Tops', href: '/search?category=Fashion&subcategory=Women&tertiaryCategory=Tops', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop&crop=center', price: 499, discount: 60 },
+              { name: 'Jeans', href: '/search?category=Fashion&subcategory=Women&tertiaryCategory=Jeans', image: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=400&fit=crop&crop=center', price: 899, discount: 55 },
+              { name: 'Leggings', href: '/search?category=Fashion&subcategory=Women&tertiaryCategory=Leggings', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop&crop=center', price: 399, discount: 50 },
+              { name: 'Skirts', href: '/search?category=Fashion&subcategory=Women&tertiaryCategory=Skirts', image: 'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=400&h=400&fit=crop&crop=center', price: 699, discount: 40 },
+              { name: 'Heels', href: '/search?category=Fashion&subcategory=Women&tertiaryCategory=Heels', image: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400&h=400&fit=crop&crop=center', price: 1299, discount: 45 },
+              { name: 'Flats', href: '/search?category=Fashion&subcategory=Women&tertiaryCategory=Flats', image: 'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=400&h=400&fit=crop&crop=center', price: 899, discount: 50 },
+              { name: 'Sandals', href: '/search?category=Fashion&subcategory=Women&tertiaryCategory=Sandals', image: 'https://images.unsplash.com/photo-1603487742131-4160ec999306?w=400&h=400&fit=crop&crop=center', price: 799, discount: 40 },
+              { name: 'Handbags', href: '/search?category=Fashion&subcategory=Women&tertiaryCategory=Handbags', image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop&crop=center', price: 1599, discount: 35 },
+              { name: 'Jewelry', href: '/search?category=Fashion&subcategory=Women&tertiaryCategory=Jewelry', image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=400&fit=crop&crop=center', price: 699, discount: 55 }
+            ]
+          },
+          'Kids': {
+            title: 'Kids Fashion',
+            description: 'Cute and comfortable clothing for children.',
+            images: [
+              'https://images.unsplash.com/photo-1503944168849-4d4b47e4b1b6?w=400',
+              'https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=400'
+            ],
+            color: 'bg-yellow-50',
+            button: 'bg-yellow-600 hover:bg-yellow-700',
+            categories: [
+              { name: 'Boys T-Shirts', href: '/search?category=Fashion&subcategory=Kids&tertiaryCategory=Boys-T-Shirts', image: 'https://images.unsplash.com/photo-1503944168849-4d4b47e4b1b6?w=400&h=400&fit=crop&crop=center', price: 299, discount: 50 },
+              { name: 'Girls Dresses', href: '/search?category=Fashion&subcategory=Kids&tertiaryCategory=Girls-Dresses', image: 'https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=400&h=400&fit=crop&crop=center', price: 499, discount: 45 },
+              { name: 'Boys Shirts', href: '/search?category=Fashion&subcategory=Kids&tertiaryCategory=Boys-Shirts', image: 'https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=400&h=400&fit=crop&crop=center', price: 399, discount: 40 },
+              { name: 'Girls Tops', href: '/search?category=Fashion&subcategory=Kids&tertiaryCategory=Girls-Tops', image: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?w=400&h=400&fit=crop&crop=center', price: 349, discount: 45 },
+              { name: 'Kids Jeans', href: '/search?category=Fashion&subcategory=Kids&tertiaryCategory=Kids-Jeans', image: 'https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=400&h=400&fit=crop&crop=center', price: 599, discount: 50 },
+              { name: 'Kids Shorts', href: '/search?category=Fashion&subcategory=Kids&tertiaryCategory=Kids-Shorts', image: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?w=400&h=400&fit=crop&crop=center', price: 299, discount: 40 },
+              { name: 'Kids Shoes', href: '/search?category=Fashion&subcategory=Kids&tertiaryCategory=Kids-Shoes', image: 'https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=400&h=400&fit=crop&crop=center', price: 799, discount: 35 },
+              { name: 'School Uniforms', href: '/search?category=Fashion&subcategory=Kids&tertiaryCategory=School-Uniforms', image: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?w=400&h=400&fit=crop&crop=center', price: 699, discount: 30 },
+              { name: 'Party Wear', href: '/search?category=Fashion&subcategory=Kids&tertiaryCategory=Party-Wear', image: 'https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=400&h=400&fit=crop&crop=center', price: 999, discount: 40 },
+              { name: 'Sleepwear', href: '/search?category=Fashion&subcategory=Kids&tertiaryCategory=Sleepwear', image: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?w=400&h=400&fit=crop&crop=center', price: 399, discount: 35 },
+              { name: 'Winter Wear', href: '/search?category=Fashion&subcategory=Kids&tertiaryCategory=Winter-Wear', image: 'https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=400&h=400&fit=crop&crop=center', price: 1299, discount: 45 },
+              { name: 'Accessories', href: '/search?category=Fashion&subcategory=Kids&tertiaryCategory=Accessories', image: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?w=400&h=400&fit=crop&crop=center', price: 199, discount: 30 }
+            ]
+          },
+          'T-Shirts': {
+            title: 'T-Shirts Collection',
+            description: 'Comfortable and stylish t-shirts for every occasion.',
+            images: [
+              'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400',
+              'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=400',
+              'https://images.unsplash.com/photo-1583743814966-8936f37f4678?w=400'
+            ],
+            color: 'bg-blue-50',
+            button: 'bg-blue-600 hover:bg-blue-700'
+          },
+          'Jeans': {
+            title: 'Premium Jeans',
+            description: 'High-quality denim jeans in various fits and styles.',
+            images: [
+              'https://images.unsplash.com/photo-1542272604-787c3835535d?w=400',
+              'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400',
+              'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400'
+            ],
+            color: 'bg-indigo-50',
+            button: 'bg-indigo-600 hover:bg-indigo-700'
+          },
+          'Shirts': {
+            title: 'Stylish Shirts',
+            description: 'Professional and casual shirts for every wardrobe.',
+            images: [
+              'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400',
+              'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400',
+              'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=400'
+            ],
+            color: 'bg-green-50',
+            button: 'bg-green-600 hover:bg-green-700'
+          },
+          'Dresses': {
+            title: 'Beautiful Dresses',
+            description: 'Elegant dresses for every special occasion.',
+            images: [
+              'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400',
+              'https://images.unsplash.com/photo-1566479179817-c0b5b4b4b1e5?w=400',
+              'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=400'
+            ],
+            color: 'bg-pink-50',
+            button: 'bg-pink-600 hover:bg-pink-700'
+          },
+          'Shoes': {
+            title: 'Footwear Collection',
+            description: 'Comfortable and stylish shoes for every step.',
+            images: [
+              'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400',
+              'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=400',
+              'https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=400'
+            ],
+            color: 'bg-purple-50',
+            button: 'bg-purple-600 hover:bg-purple-700'
+          },
+          'Accessories': {
+            title: 'Fashion Accessories',
+            description: 'Complete your look with our stylish accessories.',
+            images: [
+              'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400',
+              'https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400',
+              'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400'
+            ],
+            color: 'bg-amber-50',
+            button: 'bg-amber-600 hover:bg-amber-700',
+            categories: [
+              { name: 'Watches', href: '/search?category=Fashion&subcategory=Accessories&tertiaryCategory=Watches', image: 'https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400&h=400&fit=crop&crop=center', price: 999, discount: 60 },
+              { name: 'Sunglasses', href: '/search?category=Fashion&subcategory=Accessories&tertiaryCategory=Sunglasses', image: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&h=400&fit=crop&crop=center', price: 599, discount: 50 },
+              { name: 'Belts', href: '/search?category=Fashion&subcategory=Accessories&tertiaryCategory=Belts', image: 'https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=400&h=400&fit=crop&crop=center', price: 399, discount: 45 },
+              { name: 'Wallets', href: '/search?category=Fashion&subcategory=Accessories&tertiaryCategory=Wallets', image: 'https://images.unsplash.com/photo-1627123424574-724758594e93?w=400&h=400&fit=crop&crop=center', price: 699, discount: 40 },
+              { name: 'Bags', href: '/search?category=Fashion&subcategory=Accessories&tertiaryCategory=Bags', image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop&crop=center', price: 1299, discount: 35 },
+              { name: 'Jewelry', href: '/search?category=Fashion&subcategory=Accessories&tertiaryCategory=Jewelry', image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=400&fit=crop&crop=center', price: 799, discount: 55 },
+              { name: 'Caps & Hats', href: '/search?category=Fashion&subcategory=Accessories&tertiaryCategory=Caps-Hats', image: 'https://images.unsplash.com/photo-1521369909029-2afed882baee?w=400&h=400&fit=crop&crop=center', price: 299, discount: 40 },
+              { name: 'Scarves', href: '/search?category=Fashion&subcategory=Accessories&tertiaryCategory=Scarves', image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop&crop=center', price: 499, discount: 45 },
+              { name: 'Ties', href: '/search?category=Fashion&subcategory=Accessories&tertiaryCategory=Ties', image: 'https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400&h=400&fit=crop&crop=center', price: 399, discount: 35 },
+              { name: 'Hair Accessories', href: '/search?category=Fashion&subcategory=Accessories&tertiaryCategory=Hair-Accessories', image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=400&fit=crop&crop=center', price: 199, discount: 50 },
+              { name: 'Phone Cases', href: '/search?category=Fashion&subcategory=Accessories&tertiaryCategory=Phone-Cases', image: 'https://images.unsplash.com/photo-1512499617640-c74ae3a79d37?w=400&h=400&fit=crop&crop=center', price: 299, discount: 40 },
+              { name: 'Perfumes', href: '/search?category=Fashion&subcategory=Accessories&tertiaryCategory=Perfumes', image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&h=400&fit=crop&crop=center', price: 899, discount: 45 }
+            ]
+          }
+        };
+        
+        const subData = subcategoryData[sub as keyof typeof subcategoryData];
+        if (subData) {
+          return (
+            <div className="mb-8 space-y-8">
+              <CategoryHeader 
+                title={subData.title}
+                description={subData.description}
+                linkText="Shop Now"
+                bannerImages={subData.images}
+                bannerColor={subData.color}
+                buttonColor={subData.button}
+              />
+              {subData.categories && (
+                <section>
+                  <h2 className="text-2xl font-bold mb-8 text-center">{sub === 'Men' ? 'Men Categories' : sub === 'Women' ? 'Women Categories' : sub === 'Kids' ? 'Kids Categories' : sub === 'Accessories' ? 'Fashion Accessories' : sub + ' Categories'}</h2>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
+                    {subData.categories.map((category: any) => (
+                      <Link key={category.name} href={category.href} className="group block bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+                        <div className="relative aspect-square overflow-hidden">
+                          <Image 
+                            src={category.image} 
+                            alt={category.name} 
+                            fill 
+                            className="object-cover group-hover:scale-110 transition-transform duration-300" 
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                          {category.discount && (
+                            <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                              {category.discount}% OFF
+                            </div>
+                          )}
+                          <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
+                            <h4 className="text-sm font-bold mb-1">{category.name}</h4>
+                            {category.price && (
+                              <p className="text-xs opacity-90">Starting ₹{category.price}</p>
+                            )}
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              )}
+            </div>
+          );
+        }
+      }
+      
+      // Handle other subcategories (non-fashion)
       const subcategoryTertiary = [...new Set(products
           .filter(p => p.subcategory === sub && p.tertiaryCategory)
           .map(p => p.tertiaryCategory!)
@@ -874,6 +1536,10 @@ function SearchContent() {
                       (p.category === 'Pooja' || 
                        (p.category === 'Home' && p.subcategory === 'Puja-Essentials')) && p.quantity > 0
                     ).slice(0, 12);
+                  }
+                  // If searching in Fashion category, show fashion products
+                  else if (opts.category === 'Fashion') {
+                    relatedProducts = [...products.filter(p => p.category === 'Fashion' && p.quantity > 0), ...FASHION_PRODUCTS.filter(p => p.quantity > 0)].slice(0, 12);
                   }
                   // If searching in Food & Drinks category
                   else if (opts.category === 'Food & Drinks') {

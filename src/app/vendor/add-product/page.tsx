@@ -6,8 +6,16 @@ import { Package, Save, Plus, X, Upload, Info } from 'lucide-react'
 const defaultCategories = {
   'tech': ['Accessories', 'Audio', 'Computer Accessories', 'Decor & Lighting', 'Outdoor Lighting'],
   'home': ['Puja-Essentials', 'Bathroom-Accessories', 'Kitchenware', 'Household-Appliances', 'Food Storage', 'Drinkware', 'Storage & Organization', 'Kitchen Tools', 'Baking Tools'],
+  'fashion': ['Men', 'Women', 'Kids', 'Accessories'],
   'newArrivals': ['Best Selling', 'Fragrance', 'Diwali Special', 'Gifts'],
   'customizable': ['Jewelry','Drinkware','Accessories','Kitchen']
+}
+
+const fashionSubcategories = {
+  'Men': ['Formal-Shirts', 'Casual-Shirts', 'T-Shirts', 'Polo-T-Shirts', 'Jeans', 'Trousers', 'Formal-Shoes', 'Casual-Shoes', 'Sneakers', 'Jackets', 'Hoodies', 'Watches'],
+  'Women': ['Dresses', 'Sarees', 'Kurtis', 'Tops', 'Jeans', 'Leggings', 'Skirts', 'Heels', 'Flats', 'Sandals', 'Handbags', 'Jewelry'],
+  'Kids': ['Boys-T-Shirts', 'Girls-Dresses', 'Boys-Shirts', 'Girls-Tops', 'Kids-Jeans', 'Kids-Shorts', 'Kids-Shoes', 'School-Uniforms', 'Party-Wear', 'Sleepwear', 'Winter-Wear', 'Accessories'],
+  'Accessories': ['Watches', 'Sunglasses', 'Belts', 'Wallets', 'Bags', 'Jewelry', 'Caps-Hats', 'Scarves', 'Ties', 'Hair-Accessories', 'Phone-Cases', 'Perfumes']
 }
 
 export default function AddProduct() {
@@ -15,6 +23,7 @@ export default function AddProduct() {
     name: '',
     category: '',
     subcategory: '',
+    tertiaryCategory: '',
     originalPrice: '',
     discountPrice: '',
     description: '',
@@ -89,6 +98,7 @@ export default function AddProduct() {
       name: '',
       category: '',
       subcategory: '',
+      tertiaryCategory: '',
       originalPrice: '',
       discountPrice: '',
       description: '',
@@ -176,9 +186,11 @@ export default function AddProduct() {
           brand: vendorData.brandName || vendorData.companyName || 'Unknown Brand',
           category: product.category === 'tech' ? 'Tech' : 
                    product.category === 'home' ? 'Home' : 
+                   product.category === 'fashion' ? 'Fashion' :
                    product.category === 'newArrivals' ? 'New Arrivals' : 
                    product.category === 'customizable' ? 'Customizable' : product.category,
           subcategory: product.subcategory,
+          tertiaryCategory: product.tertiaryCategory || undefined,
           description: product.description,
           images: imageUrls,
           price: parseFloat(product.discountPrice),
@@ -213,7 +225,7 @@ export default function AddProduct() {
         return
       }
       setProducts([{
-        name: '', category: '', subcategory: '', originalPrice: '', discountPrice: '',
+        name: '', category: '', subcategory: '', tertiaryCategory: '', originalPrice: '', discountPrice: '',
         description: '', stock: '', length: '', width: '', height: '', weight: '', images: []
       }])
       setActiveProduct(0)
@@ -299,6 +311,7 @@ export default function AddProduct() {
                     <option value="">Select Category</option>
                     <option value="tech">Tech</option>
                     <option value="home">Home Decor</option>
+                    <option value="fashion">Fashion</option>
                     <option value="newArrivals">New Arrivals</option>
                     <option value="customizable">Customizable Product</option>
                   </select>
@@ -307,7 +320,10 @@ export default function AddProduct() {
                   <label className="block text-sm font-medium mb-2">Subcategory *</label>
                   <select
                     value={currentProduct.subcategory}
-                    onChange={(e) => updateProduct(activeProduct, 'subcategory', e.target.value)}
+                    onChange={(e) => {
+                      updateProduct(activeProduct, 'subcategory', e.target.value)
+                      updateProduct(activeProduct, 'tertiaryCategory', '')
+                    }}
                     className="w-full px-3 py-2 border rounded-lg"
                     required
                     disabled={!currentProduct.category}
@@ -318,6 +334,22 @@ export default function AddProduct() {
                     ))}
                   </select>
                 </div>
+                {currentProduct.category === 'fashion' && currentProduct.subcategory && (
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Product Type *</label>
+                    <select
+                      value={currentProduct.tertiaryCategory}
+                      onChange={(e) => updateProduct(activeProduct, 'tertiaryCategory', e.target.value)}
+                      className="w-full px-3 py-2 border rounded-lg"
+                      required
+                    >
+                      <option value="">Select Type</option>
+                      {fashionSubcategories[currentProduct.subcategory]?.map(type => (
+                        <option key={type} value={type}>{type.replace(/-/g, ' ')}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
                 <div>
                   <label className="block text-sm font-medium mb-2">Original Price *</label>
                   <input
