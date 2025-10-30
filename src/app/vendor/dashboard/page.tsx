@@ -142,42 +142,67 @@ export default function VendorDashboard() {
 
       <div className="max-w-7xl mx-auto p-6">
         {/* Stats Cards */}
+        {/* Welcome Message for New Vendors */}
+        {(stats?.totalProducts || 0) === 0 && (
+          <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-lg mb-6">
+            <h2 className="text-xl font-bold mb-2">🎉 Welcome to ShopWave Vendor Portal!</h2>
+            <p className="mb-4">Get started by adding your first product and start selling online.</p>
+            <Link href="/vendor/add-product">
+              <button className="bg-white text-blue-600 px-4 py-2 rounded font-medium hover:bg-gray-100">
+                Add Your First Product →
+              </button>
+            </Link>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow">
+          <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">My Products</p>
                 <p className="text-2xl font-bold">{stats?.totalProducts || 0}</p>
+                {(stats?.totalProducts || 0) === 0 && (
+                  <p className="text-xs text-blue-600 mt-1">Add your first product!</p>
+                )}
               </div>
               <Package className="h-8 w-8 text-blue-500" />
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow">
+          <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Total Orders</p>
                 <p className="text-2xl font-bold">{stats?.totalOrders || 0}</p>
+                {(stats?.totalOrders || 0) === 0 && (
+                  <p className="text-xs text-green-600 mt-1">Orders will appear here</p>
+                )}
               </div>
               <ShoppingCart className="h-8 w-8 text-green-500" />
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow">
+          <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Pending Orders</p>
                 <p className="text-2xl font-bold">{stats?.pendingOrders || 0}</p>
+                {(stats?.pendingOrders || 0) === 0 && (
+                  <p className="text-xs text-orange-600 mt-1">No pending orders</p>
+                )}
               </div>
               <Bell className="h-8 w-8 text-orange-500" />
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow">
+          <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Total Earnings</p>
                 <p className="text-2xl font-bold">₹{stats?.totalEarnings?.toLocaleString() || 0}</p>
+                {(stats?.totalEarnings || 0) === 0 && (
+                  <p className="text-xs text-purple-600 mt-1">Start selling to earn!</p>
+                )}
               </div>
               <TrendingUp className="h-8 w-8 text-purple-500" />
             </div>

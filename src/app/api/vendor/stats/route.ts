@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
       }, { status: 400 })
     }
     
+    console.log('📊 Fetching stats for vendorId:', vendorId)
     await dbConnect()
 
     // Use aggregation pipeline for efficient stats calculation
@@ -46,6 +47,8 @@ export async function GET(request: NextRequest) {
       totalEarnings: orderData.totalEarnings,
       pendingOrders: orderData.pendingOrders
     }
+
+    console.log('📊 Vendor stats:', stats)
 
     return NextResponse.json({ 
       success: true, 
