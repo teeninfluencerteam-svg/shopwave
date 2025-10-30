@@ -60,7 +60,14 @@ const fashionCategories = [
     image: 'https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=300',
     href: '/search?subcategory=Formal%20Shoes'
   },
-  
+  {
+    name: 'Casual Shoes',
+    subtitle: 'Footwear Collection',
+    startingPrice: 999,
+    discount: 55,
+    image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=300',
+    href: '/search?subcategory=Casual%20Shoes'
+  },
   {
     name: 'Sneakers',
     subtitle: 'Footwear Collection',

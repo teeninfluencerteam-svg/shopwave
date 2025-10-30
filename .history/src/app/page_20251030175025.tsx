@@ -381,7 +381,12 @@ export default function Home() {
             <h4 className="text-xs sm:text-sm font-medium text-gray-700 leading-tight text-center">Gifts</h4>
           </Link>
 
-         
+          <Link href="/search?subcategory=T-Shirts" className="block text-center">
+            <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
+              <Image src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300" alt="T-Shirts" fill loading="lazy" className="object-cover" />
+            </div>
+            <h4 className="text-xs sm:text-sm font-medium text-gray-700 leading-tight text-center">T-Shirts</h4>
+          </Link>
 
           <Link href="/search?subcategory=Jeans" className="block text-center">
             <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
