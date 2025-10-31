@@ -1400,7 +1400,7 @@ function SearchContent() {
             </div>
           </section>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {bestSellers.map(p => <ProductCard key={p.id} p={p} />)}
           </div>
         </>
@@ -1480,7 +1480,7 @@ function SearchContent() {
               <SortBar />
             </div>
             {list.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {list.map((p, index) => (
                   <ProductCard key={`${p.id}-${index}`} p={p} />
                 ))}
@@ -1561,7 +1561,7 @@ function SearchContent() {
                   return relatedProducts.length > 0 ? (
                     <div>
                       <h3 className="text-xl font-bold mb-4 text-center">Related Products</h3>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                         {relatedProducts.map(p => (
                           <ProductCard key={p.id} p={p} />
                         ))}

@@ -51,7 +51,6 @@ export default function UniversalImage({
         onError={handleError}
         priority={priority}
         sizes={sizes}
-        unoptimized={true}
       />
     )
   }
@@ -66,7 +65,6 @@ export default function UniversalImage({
       onError={handleError}
       priority={priority}
       sizes={sizes}
-      unoptimized={true}
     />
   )
 }

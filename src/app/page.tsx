@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import BannerSlider from '../components/BannerSlider';
 import SafeProductCard from '../components/SafeProductCard';
+import ProductCardSkeleton from '../components/ProductCardSkeleton';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, CarouselApi } from '../components/ui/carousel'
 import OfferCard from '../components/OfferCard';
 import type { Product } from '../lib/types';
@@ -304,7 +305,7 @@ export default function Home() {
       <section>
         <h2 className="text-2xl font-bold mb-6 text-center">Shop by Category</h2>
 
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
           <Link href="/search?subcategory=Accessories" className="block text-center">
             <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
               <Image src="https://ik.imagekit.io/b5qewhvhb/e%20commers/tach/electronics%20aaitams/0294.webp?updatedAt=1756627296166" alt="Mobile Accessories" fill loading="lazy" className="object-cover" />
@@ -445,10 +446,16 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-3">
-           {visibleProducts.map((p, index) => (
-              <SafeProductCard key={`${p.id}-${index}`} p={p} />
-          ))}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+           {isLoading ? (
+             Array.from({ length: 12 }).map((_, index) => (
+               <ProductCardSkeleton key={index} />
+             ))
+           ) : (
+             visibleProducts.map((p, index) => (
+               <SafeProductCard key={`${p.id}-${index}`} p={p} />
+             ))
+           )}
         </div>
 
         {/* Infinite Scroll Trigger */}

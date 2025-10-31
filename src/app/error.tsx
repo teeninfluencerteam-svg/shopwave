@@ -18,10 +18,10 @@ export default function Error({
       <div className="max-w-md w-full text-center p-6">
         <div className="mb-4">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Something went wrong!
+            Oops! Something went wrong
           </h2>
           <p className="text-gray-600">
-            We're sorry, but something unexpected happened.
+            Don't worry, our team has been notified. Please try refreshing the page or go back to shopping.
           </p>
         </div>
         

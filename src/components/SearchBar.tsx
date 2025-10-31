@@ -26,7 +26,7 @@ export default function SearchBar(){
       return
     }
     
-    const fetchSuggestions = async () => {
+    const fetchSuggestions = async (retryCount = 0) => {
       setIsLoadingSuggestions(true)
       try {
         const response = await fetch(`/api/products?search=${encodeURIComponent(q)}&limit=5`)
@@ -46,9 +46,14 @@ export default function SearchBar(){
               price: { original: p.price?.original ?? 0, discounted: p.price?.discounted }
             }))
           setApiSuggestions(suggestions)
+        } else if (retryCount < 2) {
+          setTimeout(() => fetchSuggestions(retryCount + 1), 1000)
         }
       } catch (error) {
         console.error('Error fetching search suggestions:', error)
+        if (retryCount < 2) {
+          setTimeout(() => fetchSuggestions(retryCount + 1), 1000)
+        }
       } finally {
         setIsLoadingSuggestions(false)
       }
@@ -101,11 +106,15 @@ export default function SearchBar(){
           value={q} 
           onFocus={() => setOpen(!!q && items.length > 0)}
           onChange={e => setQ(e.target.value)} 
-          placeholder="Search for mobiles, kurta, ashwagandha..." 
-          className="w-full bg-transparent px-3 py-2 outline-none" 
+          placeholder="Search products..." 
+          className="w-full bg-transparent px-3 py-2 outline-none"
+          aria-label="Search for products"
+          role="searchbox"
+          aria-expanded={open}
+          aria-autocomplete="list"
         />
         {q && (
-          <button type="button" onClick={() => setQ('')} className="pr-3 text-gray-500">
+          <button type="button" onClick={() => setQ('')} className="pr-3 text-gray-500" aria-label="Clear search">
             <X className="h-5 w-5" />
           </button>
         )}
