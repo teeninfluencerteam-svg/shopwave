@@ -40,9 +40,6 @@ export default function Home() {
   const [api, setApi] = useState<CarouselApi>();
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const observerRef = useRef<HTMLDivElement>(null);
-  const [current, setCurrent] = useState(0);
-  const [count, setCount] = useState(0);
-  const [isAutoScrollPaused, setIsAutoScrollPaused] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -150,33 +147,6 @@ export default function Home() {
       setIsLoadingMore(false);
     }, 500);
   }, [isLoadingMore, visibleCount, filteredProducts.length]);
-
-  // Auto-scroll for Top Offers carousel
-  useEffect(() => {
-    if (!api) return;
-
-    setCount(api.scrollSnapList().length);
-    setCurrent(api.selectedScrollSnap() + 1);
-
-    api.on("select", () => {
-      setCurrent(api.selectedScrollSnap() + 1);
-    });
-
-    // Auto-scroll every 4 seconds (only if not paused)
-    const autoScroll = setInterval(() => {
-      if (!isAutoScrollPaused) {
-        if (api.canScrollNext()) {
-          api.scrollNext();
-        } else {
-          api.scrollTo(0); // Go back to first slide
-        }
-      }
-    }, 4000);
-
-    return () => {
-      clearInterval(autoScroll);
-    };
-  }, [api, isAutoScrollPaused]);
 
   // Infinite scroll observer
   useEffect(() => {
@@ -310,175 +280,149 @@ export default function Home() {
 
       <section id="tech-offers">
         <h2 className="text-2xl font-bold mb-4 text-center">Top Offers</h2>
-         <div 
-          onMouseEnter={() => setIsAutoScrollPaused(true)}
-          onMouseLeave={() => setIsAutoScrollPaused(false)}
-          onTouchStart={() => setIsAutoScrollPaused(true)}
-          onTouchEnd={() => setTimeout(() => setIsAutoScrollPaused(false), 2000)}
-        >
          <Carousel
           setApi={setApi}
           opts={{
             align: "start",
             loop: true,
-            dragFree: true,
-            containScroll: "trimSnaps",
           }}
-          className="w-full relative top-offers-carousel"
+          className="w-full"
         >
-          <CarouselContent className="-ml-2 md:-ml-4">
-            <CarouselItem className="pl-2 md:pl-4 basis-[85%] sm:basis-1/2 md:basis-1/3 lg:basis-1/4"><OfferCard title="Mobile Accessories" products={techDeals} href="/search?subcategory=Accessories"/></CarouselItem>
-            <CarouselItem className="pl-2 md:pl-4 basis-[85%] sm:basis-1/2 md:basis-1/3 lg:basis-1/4"><OfferCard title="Kitchen Tools" products={homeDeals} href="/search?subcategory=Kitchen%20Tools"/></CarouselItem>
-            <CarouselItem className="pl-2 md:pl-4 basis-[85%] sm:basis-1/2 md:basis-1/3 lg:basis-1/4"><OfferCard title="Fashion" products={fashionDeals} href="/search?category=Fashion"/></CarouselItem>
-            <CarouselItem className="pl-2 md:pl-4 basis-[85%] sm:basis-1/2 md:basis-1/3 lg:basis-1/4"><OfferCard title="LED Lights" products={newArrivals} href="/search?subcategory=LED%20Lights"/></CarouselItem>
+          <CarouselContent className="-ml-1 sm:-ml-2 md:-ml-4">
+            <CarouselItem className="pl-1 sm:pl-2 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4"><OfferCard title="Mobile Accessories" products={techDeals} href="/search?subcategory=Accessories"/></CarouselItem>
+            <CarouselItem className="pl-1 sm:pl-2 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4"><OfferCard title="Kitchen Tools" products={homeDeals} href="/search?subcategory=Kitchen%20Tools"/></CarouselItem>
+            <CarouselItem className="pl-1 sm:pl-2 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4"><OfferCard title="Fashion" products={fashionDeals} href="/search?category=Fashion"/></CarouselItem>
+            <CarouselItem className="pl-1 sm:pl-2 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4"><OfferCard title="LED Lights" products={newArrivals} href="/search?subcategory=LED%20Lights"/></CarouselItem>
           </CarouselContent>
-          
-          {/* Dots indicator for mobile */}
-          <div className="flex justify-center mt-4 space-x-2 sm:hidden">
-            {Array.from({ length: count }).map((_, index) => (
-              <button
-                key={index}
-                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                  index === current - 1 
-                    ? 'bg-brand scale-110 shadow-sm' 
-                    : 'bg-gray-300 hover:bg-gray-400'
-                }`}
-                onClick={() => {
-                  api?.scrollTo(index);
-                  setIsAutoScrollPaused(true);
-                  setTimeout(() => setIsAutoScrollPaused(false), 3000);
-                }}
-              />
-            ))}
-          </div>
+
         </Carousel>
-        </div>
       </section>
 
 
       {/* <FashionCategories /> */}
 
       <section>
-        {/* Electronics & Tech */}
-        <div className="mb-6">
-          <h3 className="text-lg font-bold mb-3 text-gray-800">📱 Electronics & Tech</h3>
-          <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2 sm:gap-3 md:gap-4">
-            <Link href="/search?subcategory=Accessories" className="block text-center">
-              <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
-                <Image src="https://ik.imagekit.io/b5qewhvhb/e%20commers/tach/electronics%20aaitams/0294.webp?updatedAt=1756627296166" alt="Mobile Accessories" fill loading="lazy" className="object-cover" />
-              </div>
-              <h4 className="text-[10px] sm:text-sm font-bold text-gray-800 leading-tight text-center">Mobile</h4>
-            </Link>
+        <h2 className="text-2xl font-bold mb-6 text-center">Shop by Category</h2>
 
-            <Link href="/search?subcategory=Cables%20%26%20Chargers" className="block text-center">
-              <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
-                <Image src="https://Shopwave.b-cdn.net/new%20arival/02_71c68310-5be0-4fac-97e3-de92ea6df361.webp" alt="Cables & Chargers" fill loading="lazy" className="object-cover" />
-              </div>
-              <h4 className="text-[10px] sm:text-sm font-bold text-gray-800 leading-tight text-center">Chargers</h4>
-            </Link>
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 sm:gap-4">
+          <Link href="/search?subcategory=Accessories" className="block text-center">
+            <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
+              <Image src="https://ik.imagekit.io/b5qewhvhb/e%20commers/tach/electronics%20aaitams/0294.webp?updatedAt=1756627296166" alt="Mobile Accessories" fill loading="lazy" className="object-cover" />
+            </div>
+            <h4 className="text-xs sm:text-sm font-medium text-gray-700 leading-tight text-center">Mobile Accessories</h4>
+          </Link>
 
-            <Link href="/search?subcategory=Audio" className="block text-center">
-              <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
-                <Image src="https://Shopwave.b-cdn.net/NEW%20ARIVALS/01_67515437-4d2e-40ab-8ecf-bcabffe751be.webp" alt="Audio" fill loading="lazy" className="object-cover" />
-              </div>
-              <h4 className="text-[10px] sm:text-sm font-bold text-gray-800 leading-tight text-center">Audio</h4>
-            </Link>
+          <Link href="/search?subcategory=Computer%20Accessories" className="block text-center">
+            <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
+              <Image src="https://ik.imagekit.io/b5qewhvhb/e%20commers/tach/electronics%20itams%20part%202/01_d6ef1d68-1400-4132-ad4a-a54ca8de4577.avif" alt="Computer Accessories" fill loading="lazy" className="object-cover" />
+            </div>
+            <h4 className="text-xs sm:text-sm font-medium text-gray-700 leading-tight text-center">Computer Accessories</h4>
+          </Link>
 
-            <Link href="/search?subcategory=Computer%20Accessories" className="block text-center">
-              <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
-                <Image src="https://ik.imagekit.io/b5qewhvhb/e%20commers/tach/electronics%20itams%20part%202/01_d6ef1d68-1400-4132-ad4a-a54ca8de4577.avif" alt="Computer Accessories" fill loading="lazy" className="object-cover" />
-              </div>
-              <h4 className="text-[10px] sm:text-sm font-bold text-gray-800 leading-tight text-center">Computer</h4>
-            </Link>
-          </div>
-        </div>
+          <Link href="/search?subcategory=Audio" className="block text-center">
+            <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
+              <Image src="https://Shopwave.b-cdn.net/NEW%20ARIVALS/01_67515437-4d2e-40ab-8ecf-bcabffe751be.webp" alt="Audio" fill loading="lazy" className="object-cover" />
+            </div>
+            <h4 className="text-xs sm:text-sm font-medium text-gray-700 leading-tight text-center">Audio</h4>
+          </Link>
 
-        {/* Home & Lifestyle */}
-        <div className="mb-6">
-          <h3 className="text-lg font-bold mb-3 text-gray-800">🏠 Home & Lifestyle</h3>
-          <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2 sm:gap-3 md:gap-4">
-            <Link href="/search?subcategory=Kitchen%20Appliances" className="block text-center">
-              <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
-                <Image src="https://Shopwave.b-cdn.net/new%20arival/17865..1.webp" alt="Kitchen Appliances" fill loading="lazy" className="object-cover" />
-              </div>
-              <h4 className="text-[10px] sm:text-sm font-bold text-gray-800 leading-tight text-center">Kitchen</h4>
-            </Link>
+          <Link href="/search?subcategory=Lighting" className="block text-center">
+            <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
+              <Image src="https://ik.imagekit.io/b5qewhvhb/e%20commers/tach/electronics%20aaitams/07_4a3ac08b-5f90-4f47-9c6f-a48d0999f3e7.webp?updatedAt=1756628649421" alt="Lighting" fill loading="lazy" className="object-cover" />
+            </div>
+            <h4 className="text-xs sm:text-sm font-medium text-gray-700 leading-tight text-center">Lighting</h4>
+          </Link>
 
-            <Link href="/search?subcategory=LED%20Lights" className="block text-center">
-              <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
-                <Image src="https://Shopwave.b-cdn.net/NEW%20ARIVALS/3_12e4cc87-a760-425d-badf-365f48f8677d.webp" alt="LED Lights" fill loading="lazy" className="object-cover" />
-              </div>
-              <h4 className="text-[10px] sm:text-sm font-bold text-gray-800 leading-tight text-center">LED Lights</h4>
-            </Link>
+          <Link href="/search?subcategory=Power%20%26%20Cables" className="block text-center">
+            <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
+              <Image src="https://ik.imagekit.io/b5qewhvhb/e%20commers/tach/electronics%20aaitams/01_0748acd3-4797-400f-997d-6cecf6b22f5a.webp?updatedAt=1756628128432" alt="Power & Cables" fill loading="lazy" className="object-cover" />
+            </div>
+            <h4 className="text-xs sm:text-sm font-medium text-gray-700 leading-tight text-center">Power & Cables</h4>
+          </Link>
 
-            <Link href="/search?subcategory=Fans" className="block text-center">
-              <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
-                <Image src="https://ik.imagekit.io/b5qewhvhb/e%20commers/tach/electronics%20aaitams/12249d16-5521-4931-b03a-e672fc47fb87.webp?updatedAt=1757057794638" alt="Fans & Cooling" fill loading="lazy" className="object-cover" />
-              </div>
-              <h4 className="text-[10px] sm:text-sm font-bold text-gray-800 leading-tight text-center">Fans</h4>
-            </Link>
+          <Link href="/search?subcategory=Fans" className="block text-center">
+            <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
+              <Image src="https://ik.imagekit.io/b5qewhvhb/e%20commers/tach/electronics%20aaitams/12249d16-5521-4931-b03a-e672fc47fb87.webp?updatedAt=1757057794638" alt="Fans & Cooling" fill loading="lazy" className="object-cover" />
+            </div>
+            <h4 className="text-xs sm:text-sm font-medium text-gray-700 leading-tight text-center">Fans & Cooling</h4>
+          </Link>
 
-            <Link href="/search?subcategory=Car%20Accessories" className="block text-center">
-              <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
-                <Image src="https://Shopwave.b-cdn.net/new%20arival/01_15d3c786-e22a-4818-8a49-d1c8c6662719.webp" alt="Car Accessories" fill loading="lazy" className="object-cover" />
-              </div>
-              <h4 className="text-[10px] sm:text-sm font-bold text-gray-800 leading-tight text-center">Car</h4>
-            </Link>
-          </div>
-        </div>
+          <Link href="/search?subcategory=LED%20Lights" className="block text-center">
+            <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
+              <Image src="https://Shopwave.b-cdn.net/NEW%20ARIVALS/3_12e4cc87-a760-425d-badf-365f48f8677d.webp" alt="LED Lights" fill loading="lazy" className="object-cover" />
+            </div>
+            <h4 className="text-xs sm:text-sm font-medium text-gray-700 leading-tight text-center">LED Lights</h4>
+          </Link>
 
-        {/* Fashion */}
-        <div className="mb-6">
-          <h3 className="text-lg font-bold mb-3 text-gray-800">👕 Fashion</h3>
-          <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2 sm:gap-3 md:gap-4">
-            <Link href="/search?subcategory=T-Shirts" className="block text-center">
-              <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
-                <Image src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300" alt="T-Shirts" fill loading="lazy" className="object-cover" />
-              </div>
-              <h4 className="text-[10px] sm:text-sm font-bold text-gray-800 leading-tight text-center">T-Shirts</h4>
-            </Link>
+          <Link href="/search?subcategory=Car%20Accessories" className="block text-center">
+            <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
+              <Image src="https://Shopwave.b-cdn.net/new%20arival/01_15d3c786-e22a-4818-8a49-d1c8c6662719.webp" alt="Car Accessories" fill loading="lazy" className="object-cover" />
+            </div>
+            <h4 className="text-xs sm:text-sm font-medium text-gray-700 leading-tight text-center">Car Accessories</h4>
+          </Link>
 
-            <Link href="/search?subcategory=Shirts" className="block text-center">
-              <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
-                <Image src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=300" alt="Shirts" fill loading="lazy" className="object-cover" />
-              </div>
-              <h4 className="text-[10px] sm:text-sm font-bold text-gray-800 leading-tight text-center">Shirts</h4>
-            </Link>
+          <Link href="/search?subcategory=Kitchen%20Appliances" className="block text-center">
+            <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
+              <Image src="https://Shopwave.b-cdn.net/new%20arival/17865..1.webp" alt="Kitchen Appliances" fill loading="lazy" className="object-cover" />
+            </div>
+            <h4 className="text-xs sm:text-sm font-medium text-gray-700 leading-tight text-center">Kitchen Appliances</h4>
+          </Link>
 
-            <Link href="/search?subcategory=Jeans" className="block text-center">
-              <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
-                <Image src="https://images.unsplash.com/photo-1542272604-787c3835535d?w=300" alt="Jeans" fill loading="lazy" className="object-cover" />
-              </div>
-              <h4 className="text-[10px] sm:text-sm font-bold text-gray-800 leading-tight text-center">Jeans</h4>
-            </Link>
+          <Link href="/search?subcategory=Cables%20%26%20Chargers" className="block text-center">
+            <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
+              <Image src="https://Shopwave.b-cdn.net/new%20arival/02_71c68310-5be0-4fac-97e3-de92ea6df361.webp" alt="Cables & Chargers" fill loading="lazy" className="object-cover" />
+            </div>
+            <h4 className="text-xs sm:text-sm font-medium text-gray-700 leading-tight text-center">Cables & Chargers</h4>
+          </Link>
 
-            <Link href="/search?subcategory=Shoes" className="block text-center">
-              <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
-                <Image src="https://images.unsplash.com/photo-1549298916-b41d501d3772?w=300" alt="Shoes" fill loading="lazy" className="object-cover" />
-              </div>
-              <h4 className="text-[10px] sm:text-sm font-bold text-gray-800 leading-tight text-center">Shoes</h4>
-            </Link>
-          </div>
-        </div>
+          <Link href="/search?subcategory=Gifts" className="block text-center">
+            <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
+              <Image src="https://ik.imagekit.io/b5qewhvhb/e%20commers/tach/electronics%20itams%20part%202/04_light_59099232-79e1-4dec-805f-42dc9208c96b.webp" alt="Gifts" fill loading="lazy" className="object-cover" />
+            </div>
+            <h4 className="text-xs sm:text-sm font-medium text-gray-700 leading-tight text-center">Gifts</h4>
+          </Link>
 
-        {/* Special */}
-        <div>
-          <h3 className="text-lg font-bold mb-3 text-gray-800">🎁 Special</h3>
-          <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2 sm:gap-3 md:gap-4">
-            <Link href="/search?category=Customizable" className="block text-center">
-              <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
-                <Image src="https://Shopwave.b-cdn.net/Custom%20Print%20Products/6_6cbab775-d2f1-40aa-b598-5fe7c1943372.webp" alt="Customise Product" fill loading="lazy" className="object-cover" />
-              </div>
-              <h4 className="text-[10px] sm:text-sm font-bold text-gray-800 leading-tight text-center">Custom</h4>
-            </Link>
+          <Link href="/search?subcategory=T-Shirts" className="block text-center">
+            <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
+              <Image src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300" alt="T-Shirts" fill loading="lazy" className="object-cover" />
+            </div>
+            <h4 className="text-xs sm:text-sm font-medium text-gray-700 leading-tight text-center">T-Shirts</h4>
+          </Link>
 
-            <Link href="/search?subcategory=Gifts" className="block text-center">
-              <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
-                <Image src="https://ik.imagekit.io/b5qewhvhb/e%20commers/tach/electronics%20itams%20part%202/04_light_59099232-79e1-4dec-805f-42dc9208c96b.webp" alt="Gifts" fill loading="lazy" className="object-cover" />
-              </div>
-              <h4 className="text-[10px] sm:text-sm font-bold text-gray-800 leading-tight text-center">Gifts</h4>
-            </Link>
-          </div>
+          <Link href="/search?subcategory=Jeans" className="block text-center">
+            <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
+              <Image src="https://images.unsplash.com/photo-1542272604-787c3835535d?w=300" alt="Jeans" fill loading="lazy" className="object-cover" />
+            </div>
+            <h4 className="text-xs sm:text-sm font-medium text-gray-700 leading-tight text-center">Jeans</h4>
+          </Link>
+
+          <Link href="/search?subcategory=Shirts" className="block text-center">
+            <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
+              <Image src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=300" alt="Shirts" fill loading="lazy" className="object-cover" />
+            </div>
+            <h4 className="text-xs sm:text-sm font-medium text-gray-700 leading-tight text-center">Shirts</h4>
+          </Link>
+
+          <Link href="/search?subcategory=Dresses" className="block text-center">
+            <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
+              <Image src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=300" alt="Dresses" fill loading="lazy" className="object-cover" />
+            </div>
+            <h4 className="text-xs sm:text-sm font-medium text-gray-700 leading-tight text-center">Dresses</h4>
+          </Link>
+
+          <Link href="/search?subcategory=Shoes" className="block text-center">
+            <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
+              <Image src="https://images.unsplash.com/photo-1549298916-b41d501d3772?w=300" alt="Shoes" fill loading="lazy" className="object-cover" />
+            </div>
+            <h4 className="text-xs sm:text-sm font-medium text-gray-700 leading-tight text-center">Shoes</h4>
+          </Link>
+
+          <Link href="/search?category=Customizable" className="block text-center">
+            <div className="relative w-full mx-auto mb-2 aspect-square overflow-hidden rounded-lg shadow-sm">
+              <Image src="https://Shopwave.b-cdn.net/Custom%20Print%20Products/6_6cbab775-d2f1-40aa-b598-5fe7c1943372.webp" alt="Customise Product" fill loading="lazy" className="object-cover" />
+            </div>
+            <h4 className="text-xs sm:text-sm font-medium text-gray-700 leading-tight text-center">Customise Product</h4>
+          </Link>
         </div>
       </section>
 
@@ -488,12 +432,12 @@ export default function Home() {
         <h2 className="text-2xl font-bold mb-4 text-center">Featured Products</h2>
 
         <div className="flex justify-center mb-4">
-          <div className="scrollbar-hide flex gap-2 overflow-x-auto pb-1 bg-gray-100 rounded-full p-1">
+          <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1 bg-gray-100 rounded-full p-1">
             {filterCategories.map(c => (
               <button
                 key={c}
                 onClick={() => handleCategoryClick(c)}
-                className={`whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium transition-colors ${selectedCategory === c ? 'bg-brand text-white shadow' : 'text-gray-700 hover:bg-gray-200'}`}
+                className={`whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${selectedCategory === c ? 'bg-brand text-white shadow' : 'text-gray-700 hover:bg-gray-200'}`}
               >
                 {c}
               </button>

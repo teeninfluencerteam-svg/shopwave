@@ -148,3 +148,27 @@
 .category-image img {
   @apply object-cover w-full h-full;
 }
+
+/* Carousel smooth scrolling */
+.embla {
+  overflow: hidden;
+}
+
+.embla__container {
+  display: flex;
+  touch-action: pan-y;
+}
+
+.embla__slide {
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+/* Top offers carousel specific styles */
+.top-offers-carousel {
+  @apply touch-pan-y;
+}
+
+.top-offers-carousel .embla__container {
+  @apply transition-transform duration-300 ease-out;
+}
