@@ -9,23 +9,18 @@ export default function MyProducts() {
 
   useEffect(() => {
     const loadVendorData = async () => {
-      const vendorEmail = localStorage.getItem('vendorEmail')
-      
-      if (vendorEmail) {
-        try {
-          const response = await fetch(`/api/vendor/profile?email=${vendorEmail}`)
-          const result = await response.json()
-          
-          if (result.success && result.vendor) {
-            setVendorId(result.vendor._id)
-            return
-          }
-        } catch (error) {
-          console.error('Error fetching vendor profile:', error)
+      try {
+        const response = await fetch('/api/vendor/session')
+        const result = await response.json()
+        
+        if (result.success && result.vendor) {
+          setVendorId(result.vendor._id)
+          return
         }
+      } catch (error) {
+        console.error('Error fetching vendor session:', error)
       }
       
-      // Redirect to login if no email or error
       window.location.href = '/vendor/login'
     }
     

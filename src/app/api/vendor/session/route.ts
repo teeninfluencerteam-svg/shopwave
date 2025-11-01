@@ -29,6 +29,8 @@ export async function POST(request: NextRequest) {
         _id: vendor._id,
         email: vendor.email,
         businessName: vendor.businessName,
+        brandName: vendor.brandName,
+        companyName: vendor.companyName,
         status: vendor.status
       }
     })
@@ -70,6 +72,8 @@ export async function GET() {
         _id: vendor._id,
         email: vendor.email,
         businessName: vendor.businessName,
+        brandName: vendor.brandName,
+        companyName: vendor.companyName,
         status: vendor.status
       }
     })

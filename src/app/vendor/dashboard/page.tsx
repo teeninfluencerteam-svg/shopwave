@@ -334,7 +334,7 @@ export default function VendorDashboard() {
             <Link href="/vendor/profile">
               <button className="w-full p-4 border rounded-lg hover:bg-gray-50 text-center">
                 <Edit className="h-6 w-6 mx-auto mb-2 text-gray-500" />
-                <div className="text-sm font-medium">Edit Profile</div>
+                <div className="text-sm font-medium">My Profile</div>
               </button>
             </Link>
           </div>

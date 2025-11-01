@@ -15,19 +15,27 @@ export default function VendorProfile() {
 
   const fetchVendorProfile = async () => {
     try {
-      console.log('Fetching vendor profile...')
-      const response = await fetch(`/api/vendor/profile?email=dhananjay.win2004@gmail.com`)
+      // Check session first
+      const sessionResponse = await fetch('/api/vendor/session')
+      const sessionData = await sessionResponse.json()
+      
+      if (!sessionData.success) {
+        window.location.href = '/vendor/login'
+        return
+      }
+      
+      // Fetch full profile data
+      const response = await fetch(`/api/vendor/profile?email=${sessionData.vendor.email}`)
       const data = await response.json()
-      console.log('API Response:', data)
       
       if (data.success) {
-        console.log('Setting vendor data:', data.vendor)
         setVendorData(data.vendor)
       } else {
-        console.error('API Error:', data.error)
+        console.error('Profile fetch error:', data.error)
       }
     } catch (error) {
       console.error('Error fetching profile:', error)
+      window.location.href = '/vendor/login'
     } finally {
       setLoading(false)
     }
@@ -60,7 +68,7 @@ export default function VendorProfile() {
 
   const handleSave = async () => {
     try {
-      const vendorId = vendor.vendorId
+      const vendorId = vendor._id
       let photoUrl = vendor.profilePhoto
       
       if (newPhoto) {
@@ -135,7 +143,7 @@ export default function VendorProfile() {
 
   const changePassword = async (newPassword) => {
     try {
-      const vendorId = vendor.vendorId
+      const vendorId = vendor._id
       const response = await fetch('/api/vendor/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -197,6 +205,12 @@ export default function VendorProfile() {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Vendor Profile</h1>
           <div className="flex gap-2">
+            <button
+              onClick={fetchVendorProfile}
+              className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50 flex items-center gap-2"
+            >
+              🔄 Refresh
+            </button>
             {editing ? (
               <>
                 <button

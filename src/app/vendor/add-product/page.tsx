@@ -47,7 +47,17 @@ export default function AddProduct() {
   useEffect(() => {
     const fetchVendorData = async () => {
       try {
-        const response = await fetch(`/api/vendor/profile?email=dhananjay.win2004@gmail.com`)
+        // First check session
+        const sessionResponse = await fetch('/api/vendor/session')
+        const sessionResult = await sessionResponse.json()
+        
+        if (!sessionResult.success) {
+          window.location.href = '/vendor/login'
+          return
+        }
+        
+        // Get full vendor profile
+        const response = await fetch(`/api/vendor/profile?vendorId=${sessionResult.vendor._id}`)
         const result = await response.json()
         
         if (result.success && result.vendor) {
@@ -55,6 +65,7 @@ export default function AddProduct() {
         }
       } catch (error) {
         console.error('Error fetching vendor data:', error)
+        window.location.href = '/vendor/login'
       } finally {
         setVendorLoading(false)
       }
@@ -184,7 +195,7 @@ export default function AddProduct() {
         const productData = {
           vendorId: vendorData._id,
           name: product.name,
-          brand: vendorData.brandName || vendorData.companyName || 'Unknown Brand',
+          brand: vendorData.brandName || vendorData.businessName || 'Unknown Brand',
           category: product.category === 'tech' ? 'Tech' : 
                    product.category === 'home' ? 'Home' : 
                    product.category === 'fashion' ? 'Fashion' :
